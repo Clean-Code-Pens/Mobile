@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:clean_code/Screen/CreateMeetingScreen.dart';
 
 class DetailEvent extends StatefulWidget {
   @override
@@ -58,61 +59,28 @@ class _DetailEventState extends State<DetailEvent>
               SizedBox(
                 height: 8,
               ),
-              SizedBox(
-                width: double.maxFinite,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 8),
-                        child: Icon(Icons.location_on_outlined),
-                      ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(right: 8),
+                    child: Icon(Icons.location_on_outlined),
+                  ),
+                  Expanded(
+                    child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Surabaya'),
+                        Text('Sursjdbawdnjw dawd qkwdb abayakjfhashdoadhsdabfkajbfajbfki',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child:
-                              Text('Sursjdbawdnjw dawd qkwdb abaya fhghfgghgj'),
+                        Text(
+                          'Sursjdbawdnjw dawd qkwdb abayakjfhashdoadhsdabfkajbfajbfki',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: Icon(Icons.location_on_outlined),
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Surabaya'),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Sursjdbawdnjw dawd qkwdb abaya'),
-                      ),
-                    ],
                   ),
                 ],
               ),
@@ -128,20 +96,26 @@ class _DetailEventState extends State<DetailEvent>
                       child: Icon(Icons.access_time_outlined),
                     ),
                   ),
-                  Column(
+                  Expanded(child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('Wednesday, October 18, 2023'),
+                        child: Text('Wednesday, October 18, 2023asodhoasdhoahfoasf',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
-                        child: Text('Sursjdbawdnjw dawd qkwdb abaya'),
+                        child: Text('Sursjdbawdnjw dawd qkwdb abayadiasdiuasidaisdb',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       )
-                    ],
-                  ),
+                    ],))
+
                 ],
               ),
               SizedBox(
@@ -150,7 +124,10 @@ class _DetailEventState extends State<DetailEvent>
               Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'),
+                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+                  maxLines: 5,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
               SizedBox(
                 height: 10,
@@ -174,8 +151,13 @@ class _DetailEventState extends State<DetailEvent>
                     ),
                   ),
                 ),
-                onTap: () => print("seemore"),
-              ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) =>
+                              CreateMeeting()));
+                },              ),
               SizedBox(
                 height: 20,
               ),
