@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
-import 'package:clean_code/Screen/RegisterScreen.dart';
-
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +15,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home:
             LoginScreen(),
-           // RegisterScreen(),
+
     );
   }
 }
