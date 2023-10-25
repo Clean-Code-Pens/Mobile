@@ -1,5 +1,9 @@
+import 'package:clean_code/models/api_response.dart';
+import 'package:clean_code/models/event_models.dart';
+import 'package:clean_code/services/event_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 
 class DetailEvent extends StatefulWidget {
   @override
@@ -9,6 +13,29 @@ class DetailEvent extends StatefulWidget {
 class _DetailEventState extends State<DetailEvent>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  List<EventModel> event = [];
+
+  EventService get service => GetIt.instance<EventService>();
+
+  late APIResponse<List<EventModel>> _apiResponse;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchEvents();
+  }
+
+  _fetchEvents() async {
+    setState(() {
+      _isLoading = true;
+    });
+    _apiResponse = await service.getEventList();
+    print(_apiResponse.errorMessage);
+    setState(() {
+      _isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +80,7 @@ class _DetailEventState extends State<DetailEvent>
               ),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Webinar'),
+                child: Text(_apiResponse.data[0].name),
               ),
               SizedBox(
                 height: 8,
@@ -149,8 +176,7 @@ class _DetailEventState extends State<DetailEvent>
               ),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text(
-                    'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'),
+                child: Text(_apiResponse.data[0].description),
               ),
               SizedBox(
                 height: 10,
