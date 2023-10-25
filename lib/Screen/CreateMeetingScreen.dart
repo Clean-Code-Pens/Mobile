@@ -82,7 +82,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.datetime,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -119,7 +119,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.number,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -157,7 +157,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                     ),
                     child: TextField(
                       textAlign: TextAlign.left,
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         border: InputBorder.none,

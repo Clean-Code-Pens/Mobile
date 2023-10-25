@@ -18,8 +18,6 @@ class MyApp extends StatelessWidget {
       title: 'Clean Code',
       debugShowCheckedModeBanner: false,
       home:
-            // LoginScreen(),
-
           // LoginScreen(),
           // RegisterScreen(),
           HomeScreen(),

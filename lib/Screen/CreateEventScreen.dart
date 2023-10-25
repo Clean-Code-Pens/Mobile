@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -12,6 +11,9 @@ class _CreateEventState extends State<CreateEvent> {
   int _selectedIndex = 0;
   DateTime? selectedDateTime;
   XFile? _selectedImage;
+  String? selectedCategory;
+  List<String> categoryList = ['Category 1', 'Category 2', 'Category 3'];
+
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -100,12 +102,13 @@ class _CreateEventState extends State<CreateEvent> {
               ),
             ],
           ),
-          child: Column(
+          child:
+          Column(
             children: [
               Align(
                 alignment: Alignment.center,
                 child: Text(
-                  'Create a New Event',
+                  'Create New Event',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
                 ),
               ),
@@ -116,7 +119,55 @@ class _CreateEventState extends State<CreateEvent> {
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Event Name'),
+                    child: Text('Category'),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedCategory,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCategory = newValue;
+                        });
+                      },
+                      items: categoryList.map((String category) {
+                        return DropdownMenuItem<String>(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        hintText: "Select Category",
+                        hintStyle: TextStyle(color: Color(0xff7A7A7A)),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Create a New Event'),
                   ),
                   SizedBox(
                     height: 10,
@@ -135,7 +186,7 @@ class _CreateEventState extends State<CreateEvent> {
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.name,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,

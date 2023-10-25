@@ -54,7 +54,7 @@ class _DetailEventState extends State<DetailEvent>
               ),
               Align(
                 alignment: Alignment.centerLeft,
-                child: Text('Webinar'),
+                child: Text('WebinarSursjdbawdnjw dawd qkwdb abayakjfhashdoadhsdabfkajbfajbfki'),
               ),
               SizedBox(
                 height: 8,
@@ -71,11 +71,11 @@ class _DetailEventState extends State<DetailEvent>
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Sursjdbawdnjw dawd qkwdb abayakjfhashdoadhsdabfkajbfajbfki',
-                          maxLines: 1,
+                          maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
                         Text(
-                          'Sursjdbawdnjw dawd qkwdb abayakjfhashdoadhsdabfkajbfajbfki',
+                          'apakabarsdoanfojafuabfoajfoiasfojafnjkmnfiwuejnkfdmv nf',
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
