@@ -1,4 +1,5 @@
-import 'package:clean_code/services/event_service.dart';
+import 'package:clean_code/Provider/Database/db_provider.dart';
+import 'package:clean_code/Services/event_service.dart';
 import 'package:flutter/material.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/RegisterScreen.dart';
@@ -6,9 +7,11 @@ import 'package:clean_code/Screen/HomeScreen.dart';
 import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:get_it/get_it.dart';
+import 'package:clean_code/Screen/CreateMeetingScreen.dart';
+import 'package:provider/provider.dart';
 
 void setupLocator() {
-  GetIt.instance.registerLazySingleton(() => EventService());
+  GetIt.I.registerLazySingleton(() => EventService());
 }
 
 void main() {
@@ -21,15 +24,18 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Clean Code',
-      debugShowCheckedModeBanner: false,
-      home:
-          // LoginScreen(),
-          // RegisterScreen(),
-          // HomeScreen(),
-          // CreateEvent(),
-          DetailEvent(),
+    return MultiProvider(
+      providers: [ChangeNotifierProvider(create: (_) => DatabaseProvider())],
+      child: MaterialApp(
+        title: 'Clean Code',
+        debugShowCheckedModeBanner: false,
+        home:
+            // LoginScreen(),
+            // RegisterScreen(),
+            // HomeScreen(),
+            // CreateEvent(),
+            DetailEvent(),
+      ),
     );
   }
 }

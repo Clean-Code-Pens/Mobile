@@ -1,9 +1,14 @@
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+import 'package:clean_code/Screen/RegisterScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class LoginScreen extends StatefulWidget{
 
   @override
+
   _LoginScreenState createState() => _LoginScreenState();
 
 }
@@ -11,8 +16,16 @@ class LoginScreen extends StatefulWidget{
 class _LoginScreenState extends State<LoginScreen>{
 
   bool _obscureText = true;
-
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  String errorMessage = '';
   @override
+
+  void dispose() {
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -39,7 +52,7 @@ class _LoginScreenState extends State<LoginScreen>{
       ),
     );
   }
-  Widget _buildEmail(){
+  Widget _buildEmail() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -48,7 +61,7 @@ class _LoginScreenState extends State<LoginScreen>{
           style: TextStyle(
             color: Colors.black,
             fontSize: 16,
-            fontWeight: FontWeight.bold
+            fontWeight: FontWeight.bold,
           ),
         ),
         SizedBox(height: 14),
@@ -61,30 +74,31 @@ class _LoginScreenState extends State<LoginScreen>{
               BoxShadow(
                 color: Colors.black26,
                 blurRadius: 6,
-                offset: Offset(0, 2)
-              )
-            ]
+                offset: Offset(0, 2),
+              ),
+            ],
           ),
           height: 50,
           child: TextField(
+            controller: emailController,
             keyboardType: TextInputType.emailAddress,
             style: TextStyle(
-              color: Colors.black
+              color: Colors.black,
             ),
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: EdgeInsets.only(top: 16),
               prefixIcon: Icon(
                 Icons.email,
-                color: Colors.grey
+                color: Colors.grey,
               ),
               hintText: "Email",
               hintStyle: TextStyle(
-                color: Colors.black
-              )
+                color: Colors.black,
+              ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
@@ -115,58 +129,87 @@ class _LoginScreenState extends State<LoginScreen>{
               ),
             ],
           ),
-          height: 50,
-          child: Row(
-            children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Icon(
-                  Icons.lock,
-                  color: Colors.grey,
-                ),
-              ),
-              Expanded(
-                child: TextField(
-                  obscureText: _obscureText,
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    hintText: "Password",
-                    hintStyle: TextStyle(
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  setState(() {
-                    _obscureText = !_obscureText;
-                  });
-                },
-                child: Padding(
+          child: Container(
+            height: 50,
+            child: Row(
+              children: <Widget>[
+                Padding(
                   padding: const EdgeInsets.all(12.0),
                   child: Icon(
-                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                    Icons.lock,
                     color: Colors.grey,
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: TextField(
+                    controller: passwordController,
+                    obscureText: _obscureText,
+                    style: TextStyle(
+                      color: Colors.black,
+                    ),
+                    decoration: InputDecoration(
+                      border: InputBorder.none,
+                      hintText: "Password",
+                      hintStyle: TextStyle(
+                        color: Colors.black,
+                      ),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Icon(
+                      _obscureText ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ],
     );
   }
 
+
   Widget _buildLoginButton() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () => print("Login Pressed"),
+        onPressed: () async {
+          final email = emailController.text;
+          final password = passwordController.text;
+
+          if (email.isEmpty || password.isEmpty) {
+            final errorMessage = 'Email dan password harus diisi.';
+            showDialog(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Error'),
+                content: Text(errorMessage),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: Text('OK'),
+                  ),
+                ],
+              ),
+            );
+            return;
+          }
+
+          // Lanjutkan dengan permintaan login ke server
+          // ...
+
+        },
         style: ButtonStyle(
           elevation: MaterialStateProperty.all(5),
           shape: MaterialStateProperty.all(RoundedRectangleBorder(
@@ -181,6 +224,8 @@ class _LoginScreenState extends State<LoginScreen>{
       ),
     );
   }
+
+
   Widget _buildOr() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -238,7 +283,10 @@ class _LoginScreenState extends State<LoginScreen>{
         Padding(
           padding: EdgeInsets.only(),
           child: TextButton(
-            onPressed: () {},
+            onPressed: () {
+              // Navigasi ke halaman registrasi
+              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+            },
             child: RichText(
               text: TextSpan(children: [
                 TextSpan(
@@ -264,6 +312,7 @@ class _LoginScreenState extends State<LoginScreen>{
       ],
     );
   }
+
 
   Widget _buildContainer() {
     return Row(

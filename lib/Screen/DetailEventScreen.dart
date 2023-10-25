@@ -1,9 +1,10 @@
-import 'package:clean_code/models/api_response.dart';
-import 'package:clean_code/models/event_models.dart';
-import 'package:clean_code/services/event_service.dart';
+import 'package:clean_code/Models/api_response.dart';
+import 'package:clean_code/Models/event_models.dart';
+import 'package:clean_code/Services/event_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:clean_code/Screen/CreateMeetingScreen.dart';
 
 class DetailEvent extends StatefulWidget {
   @override
@@ -13,25 +14,24 @@ class DetailEvent extends StatefulWidget {
 class _DetailEventState extends State<DetailEvent>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
-  List<EventModel> event = [];
 
-  EventService get service => GetIt.instance<EventService>();
+  EventService get service => GetIt.I<EventService>();
 
-  late APIResponse<List<EventModel>> _apiResponse;
+  APIResponse<EventModel>? _apiDetailEvent;
   bool _isLoading = false;
 
   @override
   void initState() {
-    super.initState();
     _fetchEvents();
+    super.initState();
   }
 
   _fetchEvents() async {
     setState(() {
       _isLoading = true;
     });
-    _apiResponse = await service.getEventList();
-    print(_apiResponse.errorMessage);
+    _apiDetailEvent = await service.getDetailEvent();
+    print(_apiDetailEvent?.data.id);
     setState(() {
       _isLoading = false;
     });
@@ -57,170 +57,158 @@ class _DetailEventState extends State<DetailEvent>
         ],
         backgroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          width: double.maxFinite,
-          margin: EdgeInsets.all(20),
-          child: Column(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 200,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: Colors.amber,
-                  image: DecorationImage(
-                    image: AssetImage("assets/masjid-nabawi-1.jpg"),
-                    fit: BoxFit.cover,
+      body: Builder(
+        builder: (_) {
+          return SingleChildScrollView(
+            child: Container(
+              width: double.maxFinite,
+              margin: EdgeInsets.all(20),
+              child: Column(
+                children: [
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: 200,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.amber,
+                      image: DecorationImage(
+                        image: AssetImage("assets/masjid-nabawi-1.jpg"),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ),
-                ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(_apiResponse.data[0].name),
-              ),
-              SizedBox(
-                height: 8,
-              ),
-              SizedBox(
-                width: double.maxFinite,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(_apiDetailEvent?.data?.name ?? 'Not Found'),
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Padding(
                         padding: EdgeInsets.only(right: 8),
                         child: Icon(Icons.location_on_outlined),
                       ),
-                    ),
-                    Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child: Text('Surabaya'),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Sursjdbawdnjw dawd qkwdb abayakjfhashdoadhsdabfkajbfajbfki',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            Text(
+                              'apakabarsdoanfojafuabfoajfoiasfojafnjkmnfiwuejnkfdmv nf',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        Align(
-                          alignment: Alignment.centerLeft,
-                          child:
-                              Text('Sursjdbawdnjw dawd qkwdb abaya fhghfgghgj'),
+                      ),
+                    ],
+                  ),
+                  SizedBox(
+                    height: 8,
+                  ),
+                  Row(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: Icon(Icons.access_time_outlined),
+                        ),
+                      ),
+                      Expanded(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Wednesday, October 18, 2023asodhoasdhoahfoasf',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              'Sursjdbawdnjw dawd qkwdb abayadiasdiuasidaisdb',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                        ],
+                      ))
+                    ],
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    // child: Text('Deskripsi'),
+                    child:
+                        Text(_apiDetailEvent?.data?.description ?? 'Not Found'),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  InkWell(
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 2.0),
+                      width: double.maxFinite,
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Color(0xFF3188FA),
+                      ),
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 10, bottom: 10),
+                          child: Text(
+                            'New Meeting',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CreateMeeting()));
+                    },
+                  ),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Card(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        const ListTile(
+                          leading: Icon(Icons.album),
+                          title: Text('The Enchanted Nightingale'),
+                          subtitle: Text(
+                              'Music by Julie Gable. Lyrics by Sidney Stein.'),
                         ),
                       ],
                     ),
-                  ],
-                ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: Icon(Icons.location_on_outlined),
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Surabaya'),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Sursjdbawdnjw dawd qkwdb abaya'),
-                      ),
-                    ],
                   ),
                 ],
               ),
-              SizedBox(
-                height: 8,
-              ),
-              Row(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Padding(
-                      padding: EdgeInsets.only(right: 8),
-                      child: Icon(Icons.access_time_outlined),
-                    ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Wednesday, October 18, 2023'),
-                      ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Text('Sursjdbawdnjw dawd qkwdb abaya'),
-                      )
-                    ],
-                  ),
-                ],
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Text(_apiResponse.data[0].description),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              InkWell(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 2.0),
-                  width: double.maxFinite,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Color(0xFF3188FA),
-                  ),
-                  child: Align(
-                    alignment: Alignment.center,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 10, bottom: 10),
-                      child: Text(
-                        'New Meeting',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-                onTap: () => print("seemore"),
-              ),
-              SizedBox(
-                height: 20,
-              ),
-              Card(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    const ListTile(
-                      leading: Icon(Icons.album),
-                      title: Text('The Enchanted Nightingale'),
-                      subtitle:
-                          Text('Music by Julie Gable. Lyrics by Sidney Stein.'),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+            ),
+          );
+        },
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[

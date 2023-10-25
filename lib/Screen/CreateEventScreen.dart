@@ -1,15 +1,70 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateEvent extends StatefulWidget {
   @override
   _CreateEventState createState() => _CreateEventState();
 }
 
-class _CreateEventState extends State<CreateEvent>
-    with TickerProviderStateMixin {
+class _CreateEventState extends State<CreateEvent> {
   int _selectedIndex = 0;
+  DateTime? selectedDateTime;
+  XFile? _selectedImage;
+  String? selectedCategory;
+  List<String> categoryList = ['Category 1', 'Category 2', 'Category 3'];
 
+
+  Future<void> _pickImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+    setState(() {
+      _selectedImage = image;
+    });
+  }
+
+  Future<void> _selectDateTime(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+
+    if (picked != null) {
+      final TimeOfDay? pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (pickedTime != null) {
+        final DateTime combinedDateTime = DateTime(
+          picked.year,
+          picked.month,
+          picked.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+
+        // final formattedDateTime = DateFormat('yyyy-MM-dd HH:mm').format(combinedDateTime);
+        // print(formattedDateTime); 
+
+        setState(() {
+          selectedDateTime = combinedDateTime;
+        });
+      }
+    }
+  }
+  String _formatDateTime(DateTime? dateTime) {
+    if (dateTime != null) {
+      final formattedDate = "${dateTime.toLocal()}".split(' ')[0];
+      final formattedTime = "${TimeOfDay.fromDateTime(dateTime).format(context)}";
+      return "$formattedDate $formattedTime";
+    } else {
+      return "Select Date and Time";
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -43,16 +98,17 @@ class _CreateEventState extends State<CreateEvent>
                 color: Colors.grey.withOpacity(0.5),
                 spreadRadius: 5,
                 blurRadius: 7,
-                offset: Offset(0, 3), // changes position of shadow
+                offset: Offset(0, 3),
               ),
             ],
           ),
-          child: Column(
+          child:
+          Column(
             children: [
               Align(
                 alignment: Alignment.center,
                 child: Text(
-                  'Create a New Event',
+                  'Create New Event',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
                 ),
               ),
@@ -63,7 +119,55 @@ class _CreateEventState extends State<CreateEvent>
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Event Name'),
+                    child: Text('Category'),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                    child: DropdownButtonFormField<String>(
+                      value: selectedCategory,
+                      onChanged: (String? newValue) {
+                        setState(() {
+                          selectedCategory = newValue;
+                        });
+                      },
+                      items: categoryList.map((String category) {
+                        return DropdownMenuItem<String>(
+                          value: category,
+                          child: Text(category),
+                        );
+                      }).toList(),
+                      decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(10),
+                        hintText: "Select Category",
+                        hintStyle: TextStyle(color: Color(0xff7A7A7A)),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                ],
+              ),
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Create a New Event'),
                   ),
                   SizedBox(
                     height: 10,
@@ -82,7 +186,7 @@ class _CreateEventState extends State<CreateEvent>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.datetime,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -119,7 +223,7 @@ class _CreateEventState extends State<CreateEvent>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -156,7 +260,7 @@ class _CreateEventState extends State<CreateEvent>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.streetAddress,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -174,74 +278,43 @@ class _CreateEventState extends State<CreateEvent>
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Date'),
+                    child: Text('Date and Time'),
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 3,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
+                  GestureDetector(
+                    onTap: () {
+                      _selectDateTime(context);
+                    },
+                    child: Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.5),
+                            spreadRadius: 2,
+                            blurRadius: 3,
+                            offset: Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.all(15),
+                        child: Text(
+                          _formatDateTime(selectedDateTime),
+                          style: TextStyle(
+                            color: selectedDateTime != null ? Colors.black : Color(0xff7A7A7A),
+                          ),
+                      ),
                     ),
-                    child: TextField(
-                      keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(10),
-                          hintText: "Enter Date",
-                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
-                    ),
+                  ),
                   ),
                   SizedBox(
                     height: 15,
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text('Time'),
                   ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 3,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      keyboardType: TextInputType.emailAddress,
-                      style: TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(10),
-                          hintText: "Enter Time",
-                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  )
                 ],
               ),
               Column(
@@ -268,7 +341,7 @@ class _CreateEventState extends State<CreateEvent>
                     ),
                     child: TextField(
                       textAlign: TextAlign.left,
-                      keyboardType: TextInputType.emailAddress,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                         border: InputBorder.none,
@@ -284,6 +357,63 @@ class _CreateEventState extends State<CreateEvent>
                     height: 15,
                   )
                 ],
+              ),
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Upload Image'),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  GestureDetector(
+                    onTap: _pickImage,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Container(
+                        width: double.infinity,
+                        height: 150,
+                        decoration: BoxDecoration(
+                          color: Colors.grey[200],
+                          border: Border.all(color: Colors.grey),
+                        ),
+                        child: _selectedImage == null
+                            ? Center(
+                          child: Text('Tap to select an image'),
+                        )
+                            : Image.file(
+                          File(_selectedImage!.path),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  )
+                ],
+              ),
+              InkWell(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2.0),
+                  width: double.maxFinite,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color(0xFF3188FA),
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 15, bottom: 15),
+                      child: Text(
+                        'Upload Event',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+                onTap: () => print("seemore"),
               ),
             ],
           ),
@@ -319,4 +449,8 @@ class _CreateEventState extends State<CreateEvent>
       ),
     );
   }
+
 }
+
+
+

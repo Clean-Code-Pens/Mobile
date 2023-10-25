@@ -1,3 +1,4 @@
+import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -10,6 +11,8 @@ class RegisterScreen extends StatefulWidget{
 
 class _RegisterScreenState extends State<RegisterScreen>{
 
+  String password = '';
+  String confirmPassword = '';
   bool _obscureText = true;
 
   @override
@@ -140,6 +143,8 @@ class _RegisterScreenState extends State<RegisterScreen>{
     );
   }
 
+
+
   Widget _buildPassword() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,9 +187,91 @@ class _RegisterScreenState extends State<RegisterScreen>{
                   style: TextStyle(
                     color: Colors.black,
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      password = value;
+                    });
+                  },
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Password",
+                    hintStyle: TextStyle(
+                      color: Colors.black,
+                    ),
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  setState(() {
+                    _obscureText = !_obscureText;
+                  });
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Icon(
+                    _obscureText ? Icons.visibility_off : Icons.visibility,
+                    color: Colors.grey,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildConfirmPassword() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "Confirm Password",
+          style: TextStyle(
+            color: Colors.black,
+            fontSize: 16,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        SizedBox(height: 14),
+        Container(
+          alignment: Alignment.centerLeft,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(10),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black26,
+                blurRadius: 6,
+                offset: Offset(0, 2),
+              ),
+            ],
+          ),
+          height: 50,
+          child: Row(
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Icon(
+                  Icons.lock,
+                  color: Colors.grey,
+                ),
+              ),
+              Expanded(
+                child: TextField(
+                  obscureText: _obscureText,
+                  style: TextStyle(
+                    color: Colors.black,
+                  ),
+                  onChanged: (value) {
+                    setState(() {
+                      confirmPassword = value;
+                    });
+                  },
+                  decoration: InputDecoration(
+                    border: InputBorder.none,
+                    hintText: "Confirm Password",
                     hintStyle: TextStyle(
                       color: Colors.black,
                     ),
@@ -217,7 +304,29 @@ class _RegisterScreenState extends State<RegisterScreen>{
       padding: EdgeInsets.symmetric(vertical: 10),
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () => print("Register Pressed"),
+        onPressed: () {
+          if (password == confirmPassword) {
+            print("Register Pressed");
+          } else {
+            showDialog(
+              context: context,
+              builder: (context) {
+                return AlertDialog(
+                  title: Text("Error"),
+                  content: Text("Password does not match."),
+                  actions: <Widget>[
+                    TextButton(
+                      child: Text("OK"),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                );
+              },
+            );
+          }
+        },
         style: ButtonStyle(
           elevation: MaterialStateProperty.all(5),
           shape: MaterialStateProperty.all(RoundedRectangleBorder(
@@ -232,6 +341,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
       ),
     );
   }
+
   Widget _buildOr() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -282,6 +392,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
         )
     );
   }
+
   Widget _buildSignUpBtn() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -289,7 +400,10 @@ class _RegisterScreenState extends State<RegisterScreen>{
         Padding(
           padding: EdgeInsets.only(),
           child: TextButton(
-            onPressed: () {},
+            onPressed: () {
+              // Navigasi ke halaman login
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
             child: RichText(
               text: TextSpan(children: [
                 TextSpan(
@@ -361,13 +475,15 @@ class _RegisterScreenState extends State<RegisterScreen>{
                           ),
                         ],
                       ),
-                      SizedBox(height: 30),
+                      SizedBox(height: 20),
                       _buildName(),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       _buildEmail(),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
                       _buildPassword(),
-                      SizedBox(height: 20),
+                      SizedBox(height: 10),
+                      _buildConfirmPassword(),
+                      SizedBox(height: 10),
                       _buildRegisterButton(),
                       _buildOr(),
                       _buildGoogleButton(),
