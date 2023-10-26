@@ -7,12 +7,23 @@ import 'package:get_it/get_it.dart';
 import 'package:clean_code/Screen/CreateMeetingScreen.dart';
 
 class DetailEvent extends StatefulWidget {
+  int idEvent;
+
+  DetailEvent({required this.idEvent});
+
   @override
   _DetailEventState createState() => _DetailEventState();
+  // _DetailEventState createState() => _DetailEventState(this.idEvent);
 }
 
 class _DetailEventState extends State<DetailEvent>
     with TickerProviderStateMixin {
+  // int? idEvent;
+
+  // _DetailEventState(id) {
+  //   this.idEvent = id;
+  // }
+
   int _selectedIndex = 0;
 
   EventService get service => GetIt.I<EventService>();
@@ -22,16 +33,16 @@ class _DetailEventState extends State<DetailEvent>
 
   @override
   void initState() {
-    _fetchEvents();
+    _fetchEvents(widget.idEvent);
     super.initState();
   }
 
-  _fetchEvents() async {
+  _fetchEvents(idEvent) async {
     setState(() {
       _isLoading = true;
     });
-    _apiDetailEvent = await service.getDetailEvent();
-    print(_apiDetailEvent?.data.id);
+    _apiDetailEvent = await service.getDetailEvent(idEvent);
+    print(_apiDetailEvent?.data.place);
     setState(() {
       _isLoading = false;
     });
@@ -72,7 +83,8 @@ class _DetailEventState extends State<DetailEvent>
                       borderRadius: BorderRadius.circular(10),
                       color: Colors.amber,
                       image: DecorationImage(
-                        image: AssetImage("assets/masjid-nabawi-1.jpg"),
+                        image: NetworkImage(
+                            _apiDetailEvent?.data?.imgUrl ?? 'Not Found'),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -99,12 +111,12 @@ class _DetailEventState extends State<DetailEvent>
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Sursjdbawdnjw dawd qkwdb abayakjfhashdoadhsdabfkajbfajbfki',
+                              _apiDetailEvent?.data?.place ?? 'Not Found',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                             ),
                             Text(
-                              'apakabarsdoanfojafuabfoajfoiasfojafnjkmnfiwuejnkfdmv nf',
+                              _apiDetailEvent?.data?.address ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -133,7 +145,7 @@ class _DetailEventState extends State<DetailEvent>
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              'Wednesday, October 18, 2023asodhoasdhoahfoasf',
+                              _apiDetailEvent?.data?.date ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
