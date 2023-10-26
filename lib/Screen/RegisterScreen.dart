@@ -342,56 +342,56 @@ class _RegisterScreenState extends State<RegisterScreen>{
     );
   }
 
-  Widget _buildOr() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          child: Text(
-            '- Or Register With -',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        )
-      ],
-    );
-  }
+  // Widget _buildOr() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: <Widget>[
+  //       Container(
+  //         child: Text(
+  //           '- Or Register With -',
+  //           style: TextStyle(
+  //             fontWeight: FontWeight.w400,
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
 
-  Widget _buildGoogleButton() {
-    return Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () => print("Google Pressed"),
-          style: ButtonStyle(
-            elevation: MaterialStateProperty.all(5),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            )),
-            backgroundColor: MaterialStateProperty.all(Colors.white),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/google.png',
-                height: 24,
-                width: 24,
-              ),
-              SizedBox(width: 8),
-              Text(
-                "Continue With Google",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: MediaQuery.of(context).size.height / 50,
-                ),
-              ),
-            ],
-          ),
-        )
-    );
-  }
+  // Widget _buildGoogleButton() {
+  //   return Container(
+  //       padding: EdgeInsets.symmetric(vertical: 10),
+  //       width: double.infinity,
+  //       child: ElevatedButton(
+  //         onPressed: () => print("Google Pressed"),
+  //         style: ButtonStyle(
+  //           elevation: MaterialStateProperty.all(5),
+  //           shape: MaterialStateProperty.all(RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //           )),
+  //           backgroundColor: MaterialStateProperty.all(Colors.white),
+  //         ),
+  //         child: Row(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Image.asset(
+  //               'assets/google.png',
+  //               height: 24,
+  //               width: 24,
+  //             ),
+  //             SizedBox(width: 8),
+  //             Text(
+  //               "Continue With Google",
+  //               style: TextStyle(
+  //                 color: Colors.black,
+  //                 fontSize: MediaQuery.of(context).size.height / 50,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       )
+  //   );
+  // }
 
   Widget _buildSignUpBtn() {
     return Row(
@@ -485,8 +485,8 @@ class _RegisterScreenState extends State<RegisterScreen>{
                       _buildConfirmPassword(),
                       SizedBox(height: 10),
                       _buildRegisterButton(),
-                      _buildOr(),
-                      _buildGoogleButton(),
+                      // _buildOr(),
+                      // _buildGoogleButton(),
                       _buildSignUpBtn(),
                     ],
                   ),
