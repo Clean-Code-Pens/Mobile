@@ -1,10 +1,13 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
+import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Services/meeting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateMeeting extends StatefulWidget {
   int idEvent;
@@ -25,6 +28,16 @@ class _CreateMeetingState extends State<CreateMeeting>
   TextEditingController peopleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
+  Future<void> removeAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token');
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +49,7 @@ class _CreateMeetingState extends State<CreateMeeting>
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => print("image clicked"),
+            onPressed: () => removeAccessToken(),
             icon: CircleAvatar(
               radius: 55.0,
               backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
@@ -329,6 +342,13 @@ class _CreateMeetingState extends State<CreateMeeting>
           setState(() {
             _selectedIndex = index;
           });
+          if (_selectedIndex == 0) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ));
+          }
         },
       ),
     );
