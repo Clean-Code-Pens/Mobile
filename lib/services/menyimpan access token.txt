@@ -1,0 +1,50 @@
+Untuk menyimpan access token login di local storage Flutter, Anda dapat menggunakan package Flutter seperti `shared_preferences` atau `flutter_secure_storage`. Berikut contoh penggunaannya menggunakan `shared_preferences`:
+
+1. Tambahkan `shared_preferences` ke `pubspec.yaml`:
+
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+  shared_preferences: ^2.0.6
+```
+
+2. Jalankan `flutter pub get` untuk menginstal package.
+
+3. Import package `shared_preferences` dalam file Dart Anda:
+
+```dart
+import 'package:shared_preferences/shared_preferences.dart';
+```
+
+4. Saat Anda menerima access token setelah login, simpan token tersebut ke local storage:
+
+```dart
+// Simpan access token ke local storage
+Future<void> saveAccessToken(String accessToken) async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.setString('access_token', accessToken);
+}
+```
+
+5. Ketika Anda ingin mengambil access token, gunakan fungsi berikut:
+
+```dart
+// Ambil access token dari local storage
+Future<String?> getAccessToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  return prefs.getString('access_token');
+}
+```
+
+6. Untuk menghapus access token saat logout, Anda dapat menggunakan:
+
+```dart
+// Hapus access token dari local storage saat logout
+Future<void> removeAccessToken() async {
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.remove('access_token');
+}
+```
+
+Dengan menggunakan `shared_preferences`, Anda dapat dengan mudah menyimpan dan mengambil access token dari local storage. Pastikan Anda memanggil fungsi-fungsi ini sesuai dengan alur login dan logout aplikasi Anda.

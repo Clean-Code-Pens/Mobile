@@ -1,31 +1,37 @@
 import 'dart:convert';
+import 'package:clean_code/Models/api_response.dart';
+import 'package:clean_code/Models/login_model.dart';
+import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Services/auth_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:clean_code/Screen/RegisterScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-class LoginScreen extends StatefulWidget{
-
+class LoginScreen extends StatefulWidget {
   @override
-
   _LoginScreenState createState() => _LoginScreenState();
-
 }
 
-class _LoginScreenState extends State<LoginScreen>{
+class _LoginScreenState extends State<LoginScreen> {
+  AuthService get serviceLogin => GetIt.I<AuthService>();
+
+  APIResponse<LoginModel>? _apiLogin;
 
   bool _obscureText = true;
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   String errorMessage = '';
   @override
-
   void dispose() {
     emailController.dispose();
     passwordController.dispose();
     super.dispose();
   }
+
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -52,6 +58,7 @@ class _LoginScreenState extends State<LoginScreen>{
       ),
     );
   }
+
   Widget _buildEmail() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -178,7 +185,6 @@ class _LoginScreenState extends State<LoginScreen>{
     );
   }
 
-
   Widget _buildLoginButton() {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 10),
@@ -207,8 +213,34 @@ class _LoginScreenState extends State<LoginScreen>{
           }
 
           // Lanjutkan dengan permintaan login ke server
+          _apiLogin = await serviceLogin.login(email, password);
+          if (_apiLogin != null) {
+            if (_apiLogin?.error == true) {
+              showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: Text('Error'),
+                  content: Text(_apiLogin?.errorMessage ?? 'Error'),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: Text('OK'),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              final prefs = await SharedPreferences.getInstance();
+              prefs.setString('access_token',
+                  _apiLogin?.data?.access_token ?? 'access_token');
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => HomeScreen(),
+                  ));
+            }
+          }
           // ...
-
         },
         style: ButtonStyle(
           elevation: MaterialStateProperty.all(5),
@@ -224,7 +256,6 @@ class _LoginScreenState extends State<LoginScreen>{
       ),
     );
   }
-
 
   Widget _buildOr() {
     return Row(
@@ -256,7 +287,8 @@ class _LoginScreenState extends State<LoginScreen>{
             backgroundColor: MaterialStateProperty.all(Colors.white),
           ),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center, // Untuk membuat teks di tengah
+            mainAxisAlignment:
+                MainAxisAlignment.center, // Untuk membuat teks di tengah
             children: [
               Image.asset(
                 'assets/google.png',
@@ -273,9 +305,9 @@ class _LoginScreenState extends State<LoginScreen>{
               ),
             ],
           ),
-        )
-    );
+        ));
   }
+
   Widget _buildSignUpBtn() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -285,7 +317,8 @@ class _LoginScreenState extends State<LoginScreen>{
           child: TextButton(
             onPressed: () {
               // Navigasi ke halaman registrasi
-              Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => RegisterScreen()));
             },
             child: RichText(
               text: TextSpan(children: [
@@ -313,7 +346,6 @@ class _LoginScreenState extends State<LoginScreen>{
     );
   }
 
-
   Widget _buildContainer() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -326,15 +358,14 @@ class _LoginScreenState extends State<LoginScreen>{
             width: MediaQuery.of(context).size.width * 0.8,
             decoration: BoxDecoration(
               color: Colors.white,
-              ),
-              child: Padding(
+            ),
+            child: Padding(
               padding: EdgeInsets.symmetric(
-              horizontal: 10,
-              vertical: 20,
+                horizontal: 10,
+                vertical: 20,
               ),
-            child: ListView(
-              shrinkWrap: true,
-                children: <Widget>[Column(
+              child: ListView(shrinkWrap: true, children: <Widget>[
+                Column(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -361,13 +392,11 @@ class _LoginScreenState extends State<LoginScreen>{
                     _buildSignUpBtn(),
                   ],
                 ),
-              ]
-              ),
+              ]),
             ),
+          ),
         ),
-        ),
-    ],
+      ],
     );
   }
 }
-

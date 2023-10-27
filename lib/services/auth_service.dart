@@ -12,14 +12,14 @@ class AuthService {
   static const API = 'https://activity-connect.projectdira.my.id/public/api';
   static const headers = {};
 
-  Future<APIResponse<LoginModel>> login() {
-    final user = {'email': 'hilmi@gmail.com', 'password': 'password'};
+  Future<APIResponse<LoginModel>> login(email, password) {
+    final user = {'email': email, 'password': password};
     return http.post(Uri.parse('${API}/auth/login'), body: user).then((data) {
       //   return APIResponse<LoginModel>(
-      //       data: LoginModel(access_token: '', user: UserModel(id: 0, name: '')),
+      //       data: LoginModel(),
       //       errorMessage: jsonDecode(data.body)['data'].toString());
       // });
-      if (data.statusCode == 200) {
+      if (data.statusCode == 201) {
         final jsonData = jsonDecode(data.body);
         final login_info = LoginModel(
           access_token: jsonData['data']['access_token'],
@@ -33,6 +33,7 @@ class AuthService {
           data: LoginModel(), error: true, errorMessage: 'An error occured');
     }).catchError((_) => APIResponse<LoginModel>(
         data: LoginModel(), error: true, errorMessage: 'An error occured'));
+
     // return http.post(Uri.parse('${API}/auth/login'),
     //     {Login(email: 'hilmi@gmail.com', password: 'password')});
     //   return http.get(Uri.parse('${API}/auth/login')).then((data) {

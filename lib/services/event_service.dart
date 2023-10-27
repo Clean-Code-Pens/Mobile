@@ -65,37 +65,64 @@ class EventService {
         data: [], error: true, errorMessage: 'An error occured'));
   }
 
-  // Future<List<APIResponse<List<EventModel>>>> getEventCategoryListLimit(
-  //     idsCategory) {
-  //   List<APIResponse<List<EventModel>>> dataList = fetchDataSynchronously();
-  //   return dataList;
-  //   // return List<APIResponse<List<EventModel>>>();
-  //   // return http.get(Uri.parse('${API}/event?limit=${limit}')).then((data) {
-  //   //   // return APIResponse<List<EventModel>>(
-  //   //   //     data: [], errorMessage: jsonDecode(data.body)['data'].toString());
-  //   //   if (data.statusCode == 200) {
-  //   //     final jsonData = jsonDecode(data.body);
-  //   //     final events = <EventModel>[];
-  //   //     for (var i = 0; i < jsonData["data"].length; i++) {
-  //   //       final event = EventModel(
-  //   //         id: jsonData["data"][i]['id'],
-  //   //         name: jsonData["data"][i]['name'],
-  //   //         description: jsonData["data"][i]['description'],
-  //   //         imgUrl: baseurl + jsonData["data"][i]['image'],
-  //   //         place: jsonData["data"][i]['place'],
-  //   //         address: jsonData["data"][i]['address'],
-  //   //         date: DateFormat('EEEE, MMMM d y')
-  //   //             .format(DateTime.parse(jsonData["data"][i]['date'])),
-  //   //       );
-  //   //       events.add(event);
-  //   //     }
-  //   //     return APIResponse<List<EventModel>>(
-  //   //         data: events, errorMessage: events.toString());
-  //   //   }
-  //   //   return APIResponse<List<EventModel>>(
-  //   //       data: [], error: true, errorMessage: 'An error occured');
-  //   // }).catchError((_) => APIResponse<List<EventModel>>(
-  //   //     data: [], error: true, errorMessage: 'An error occured'));
+  Future<APIResponse<List<EventModel>>> getEventCategoryListLimit(
+      idCategory, limit) {
+    return http
+        .get(Uri.parse('${API}/event/by-category/${idCategory}?limit=${limit}'))
+        .then((data) {
+      // return APIResponse<List<EventModel>>(
+      //     data: [], errorMessage: jsonDecode(data.body)['data'].toString());
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        final events = <EventModel>[];
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          final event = EventModel(
+            id: jsonData["data"][i]['id'],
+            name: jsonData["data"][i]['name'],
+            description: jsonData["data"][i]['description'],
+            imgUrl: baseurl + jsonData["data"][i]['image'],
+            place: jsonData["data"][i]['place'],
+            address: jsonData["data"][i]['address'],
+            date: DateFormat('EEEE, MMMM d y')
+                .format(DateTime.parse(jsonData["data"][i]['date'])),
+          );
+          events.add(event);
+        }
+        return APIResponse<List<EventModel>>(
+            data: events, errorMessage: events.toString());
+      }
+      return APIResponse<List<EventModel>>(
+          data: [], error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<List<EventModel>>(
+            data: [], error: true, errorMessage: 'An error occured'));
+  }
+
+  // Future<List<EventModel>> fetchDataSynchronously(idCategori, limit) {
+  //   return http
+  //       .get(Uri.parse('${API}/event/by-category/${idCategori}?limit=${limit}'))
+  //       .then((data) {
+  //     // return APIResponse<List<EventModel>>(
+  //     //     data: [], errorMessage: jsonDecode(data.body)['data'].toString());
+  //     if (data.statusCode == 200) {
+  //       final jsonData = jsonDecode(data.body);
+  //       final events = <EventModel>[];
+  //       for (var i = 0; i < jsonData["data"].length; i++) {
+  //         final event = EventModel(
+  //           id: jsonData["data"][i]['id'],
+  //           name: jsonData["data"][i]['name'],
+  //           description: jsonData["data"][i]['description'],
+  //           imgUrl: baseurl + jsonData["data"][i]['image'],
+  //           place: jsonData["data"][i]['place'],
+  //           address: jsonData["data"][i]['address'],
+  //           date: DateFormat('EEEE, MMMM d y')
+  //               .format(DateTime.parse(jsonData["data"][i]['date'])),
+  //         );
+  //         events.add(event);
+  //       }
+  //       return events;
+  //     }
+  //     return <EventModel>[];
+  //   }).catchError((_) => <EventModel>[]);
   // }
 
   Future<APIResponse<EventModel>> getDetailEvent(int idEvent) {
