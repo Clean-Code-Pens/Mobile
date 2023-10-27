@@ -45,10 +45,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Clean Code',
       debugShowCheckedModeBanner: false,
-      home:
-          LoginScreen(),
-          // RegisterScreen(),
-          // HomeScreen(),
       home: FutureBuilder<bool>(
         future:
             checkAuth(), // Assume you have a function that checks authentication.

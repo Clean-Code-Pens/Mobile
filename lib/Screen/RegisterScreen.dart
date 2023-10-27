@@ -18,8 +18,16 @@ class _RegisterScreenState extends State<RegisterScreen>{
   TextEditingController passwordController = TextEditingController();
   TextEditingController confirmPasswordController = TextEditingController();
   bool _obscureText = true;
+  bool _isRegistering = false;
+  bool _registrationSuccess = false;
+
 
   void registerUser() async {
+    setState(() {
+      _isRegistering = true;
+      _registrationSuccess = false;
+    });
+
     var url = "https://activity-connect.projectdira.my.id/public/api/auth/register";
     var data = {
       "name": nameController.text,
@@ -29,54 +37,64 @@ class _RegisterScreenState extends State<RegisterScreen>{
     };
     var bodyy = json.encode(data);
     var urlParse = Uri.parse(url);
-    Response response = await http.post(
-        urlParse,
-        body: bodyy,
-        headers: {
-          "Content-Type": "application/json"
-        }
-    );
 
-    if (response.statusCode == 201) {
-      // Registrasi berhasil
-      var dataa = jsonDecode(response.body);
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-              title: Text("Success"),
-              content: Text("Registration successful: ${dataa['message']}"),
-              actions: <Widget>[
-          TextButton(
-          child: Text("OK"),
-            onPressed: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
-            },
-          )
-              ],
-          );
-        },
+    try {
+      Response response = await http.post(
+          urlParse,
+          body: bodyy,
+          headers: {
+            "Content-Type": "application/json"
+          }
       );
-    } else if (response.statusCode == 422) {
-      // Error: Registrasi gagal
-      var dataa = jsonDecode(response.body);
+
+      if (response.statusCode == 201) {
+        // Registrasi berhasil
+        var dataa = jsonDecode(response.body);
+        setState(() {
+          _registrationSuccess = true;
+        });
         showDialog(
           context: context,
           builder: (context) {
             return AlertDialog(
-                title: Text("Error"),
-                content: Text("Registration failed: ${dataa['message']}"),
-                actions: <Widget>[
-            TextButton(
-            child: Text("OK"),
-            onPressed: () {
-            Navigator.of(context).pop();
-            },
-            )
-                ],
+              title: Text("Success"),
+              content: Text("Registration successful: ${dataa['message']}"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                  },
+                ),
+              ],
             );
           },
         );
+      } else if (response.statusCode == 422) {
+        // Error: Registrasi gagal
+        var dataa = jsonDecode(response.body);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Error"),
+              content: Text("Registration failed: ${dataa['message']}"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } finally {
+      setState(() {
+        _isRegistering = false;
+      });
     }
   }
 
@@ -103,6 +121,8 @@ class _RegisterScreenState extends State<RegisterScreen>{
                 ),
               ),
               _buildContainer(),
+              if (_isRegistering) CircularProgressIndicator(), // Tampilkan loading jika sedang registrasi
+              if (_registrationSuccess) Text("Registration successful!"), // Tampilkan pesan berhasil setelah registrasi
             ],
           ),
         ),

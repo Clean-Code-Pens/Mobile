@@ -6,7 +6,8 @@ import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/login_model.dart';
 import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
-import 'package:clean_code/Services/auth_service.dart';
+import 'package:clean_code/Screen/loginScreen.dart';
+import 'package:clean_code/services/auth_service.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/meeting_service.dart';
@@ -60,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // _apiLogin = await serviceLogin.login();
 
-    print(_apiLogin?.data?.access_token);
+    // // print(_apiLogin?.data?.access_token);
     //============================================
 
     _apiCategory = await serviceCategory.getCategoryList();
@@ -74,8 +75,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     // print(_apiCategory?.data?.length);
     // print(_apiEventCategoryList?.length);
-
-    _apiEventList = await serviceEvent.getEventListLimit(3);
 
     // _apiEventList = await serviceEvent.getEventListLimit(3);
     _apiMeetingList = await serviceMeeting.getMeetingListLimit(3);
@@ -183,7 +182,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       MaterialPageRoute(
                         builder: (context) => DetailEvent(
                           idEvent:
-                              _apiEventCategoryList?[i].data[index]?.id ?? 0,
+                          _apiEventCategoryList?[i].data[index]?.id ?? 0,
                         ),
                       ));
                 },
@@ -279,7 +278,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     TabController _tabController =
-        TabController(length: _apiCategory?.data?.length ?? 0, vsync: this);
+    TabController(length: _apiCategory?.data?.length ?? 0, vsync: this);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -319,7 +318,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                   items: [1, 2, 3, 4, 5].map(
-                    (i) {
+                        (i) {
                       return Builder(
                         builder: (BuildContext context) {
                           return Container(
@@ -327,7 +326,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image:
-                                      AssetImage("assets/masjid-nabawi-1.jpg"),
+                                  AssetImage("assets/masjid-nabawi-1.jpg"),
                                   fit: BoxFit.cover,
                                 ),
                                 // borderRadius: BorderRadius.only(
