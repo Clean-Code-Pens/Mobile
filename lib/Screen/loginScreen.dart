@@ -258,56 +258,56 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildOr() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Container(
-          child: Text(
-            '- Or Login With -',
-            style: TextStyle(
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-        )
-      ],
-    );
-  }
-
-  Widget _buildGoogleButton() {
-    return Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
-        width: double.infinity,
-        child: ElevatedButton(
-          onPressed: () => print("Google Pressed"),
-          style: ButtonStyle(
-            elevation: MaterialStateProperty.all(5),
-            shape: MaterialStateProperty.all(RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            )),
-            backgroundColor: MaterialStateProperty.all(Colors.white),
-          ),
-          child: Row(
-            mainAxisAlignment:
-            MainAxisAlignment.center, // Untuk membuat teks di tengah
-            children: [
-              Image.asset(
-                'assets/google.png',
-                height: 24,
-                width: 24,
-              ),
-              SizedBox(width: 8), // Spasi antara ikon dan teks
-              Text(
-                "Continue With Google",
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: MediaQuery.of(context).size.height / 50,
-                ),
-              ),
-            ],
-          ),
-        ));
-  }
+  // Widget _buildOr() {
+  //   return Row(
+  //     mainAxisAlignment: MainAxisAlignment.center,
+  //     children: <Widget>[
+  //       Container(
+  //         child: Text(
+  //           '- Or Login With -',
+  //           style: TextStyle(
+  //             fontWeight: FontWeight.w400,
+  //           ),
+  //         ),
+  //       )
+  //     ],
+  //   );
+  // }
+  //
+  // Widget _buildGoogleButton() {
+  //   return Container(
+  //       padding: EdgeInsets.symmetric(vertical: 10),
+  //       width: double.infinity,
+  //       child: ElevatedButton(
+  //         onPressed: () => print("Google Pressed"),
+  //         style: ButtonStyle(
+  //           elevation: MaterialStateProperty.all(5),
+  //           shape: MaterialStateProperty.all(RoundedRectangleBorder(
+  //             borderRadius: BorderRadius.circular(10),
+  //           )),
+  //           backgroundColor: MaterialStateProperty.all(Colors.white),
+  //         ),
+  //         child: Row(
+  //           mainAxisAlignment:
+  //           MainAxisAlignment.center, // Untuk membuat teks di tengah
+  //           children: [
+  //             Image.asset(
+  //               'assets/google.png',
+  //               height: 24,
+  //               width: 24,
+  //             ),
+  //             SizedBox(width: 8), // Spasi antara ikon dan teks
+  //             Text(
+  //               "Continue With Google",
+  //               style: TextStyle(
+  //                 color: Colors.black,
+  //                 fontSize: MediaQuery.of(context).size.height / 50,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       ));
+  // }
 
   Widget _buildSignUpBtn() {
     return Row(
@@ -388,8 +388,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     _buildPassword(),
                     SizedBox(height: 20),
                     _buildLoginButton(),
-                    _buildOr(),
-                    _buildGoogleButton(),
+                    // _buildOr(),
+                    // _buildGoogleButton(),
                     _buildSignUpBtn(),
                   ],
                 ),
