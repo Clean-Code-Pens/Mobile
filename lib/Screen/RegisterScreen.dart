@@ -1,19 +1,86 @@
+import 'dart:convert';
+
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart%20';
 
 class RegisterScreen extends StatefulWidget{
-
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 
 }
 
 class _RegisterScreenState extends State<RegisterScreen>{
-
-  String password = '';
-  String confirmPassword = '';
+  TextEditingController nameController = TextEditingController();
+  TextEditingController emailController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   bool _obscureText = true;
+
+  void registerUser() async {
+    var url = "https://activity-connect.projectdira.my.id/public/api/auth/register";
+    var data = {
+      "name": nameController.text,
+      "email": emailController.text,
+      "password": passwordController.text,
+      "password_confirmation": confirmPasswordController.text
+    };
+    var bodyy = json.encode(data);
+    var urlParse = Uri.parse(url);
+    Response response = await http.post(
+        urlParse,
+        body: bodyy,
+        headers: {
+          "Content-Type": "application/json"
+        }
+    );
+
+    if (response.statusCode == 201) {
+      // Registrasi berhasil
+      var dataa = jsonDecode(response.body);
+      showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+              title: Text("Success"),
+              content: Text("Registration successful: ${dataa['message']}"),
+              actions: <Widget>[
+          TextButton(
+          child: Text("OK"),
+            onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+            },
+          )
+              ],
+          );
+        },
+      );
+    } else if (response.statusCode == 422) {
+      // Error: Registrasi gagal
+      var dataa = jsonDecode(response.body);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+                title: Text("Error"),
+                content: Text("Registration failed: ${dataa['message']}"),
+                actions: <Widget>[
+            TextButton(
+            child: Text("OK"),
+            onPressed: () {
+            Navigator.of(context).pop();
+            },
+            )
+                ],
+            );
+          },
+        );
+    }
+  }
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -71,21 +138,15 @@ class _RegisterScreenState extends State<RegisterScreen>{
           ),
           height: 50,
           child: TextField(
-            keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            controller: nameController,
+            keyboardType: TextInputType.text,
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 16),
-                prefixIcon: Icon(
-                    Icons.person,
-                    color: Colors.grey
-                ),
-                hintText: "Name",
-                hintStyle: TextStyle(
-                    color: Colors.black
-                )
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 16),
+              prefixIcon: Icon(Icons.person, color: Colors.grey),
+              hintText: "Name",
+              hintStyle: TextStyle(color: Colors.black),
             ),
           ),
         )
@@ -121,21 +182,15 @@ class _RegisterScreenState extends State<RegisterScreen>{
           ),
           height: 50,
           child: TextField(
+            controller: emailController,
             keyboardType: TextInputType.emailAddress,
-            style: TextStyle(
-                color: Colors.black
-            ),
+            style: TextStyle(color: Colors.black),
             decoration: InputDecoration(
-                border: InputBorder.none,
-                contentPadding: EdgeInsets.only(top: 16),
-                prefixIcon: Icon(
-                    Icons.email,
-                    color: Colors.grey
-                ),
-                hintText: "Email",
-                hintStyle: TextStyle(
-                    color: Colors.black
-                )
+              border: InputBorder.none,
+              contentPadding: EdgeInsets.only(top: 16),
+              prefixIcon: Icon(Icons.person, color: Colors.grey),
+              hintText: "Email",
+              hintStyle: TextStyle(color: Colors.black),
             ),
           ),
         )
@@ -183,15 +238,11 @@ class _RegisterScreenState extends State<RegisterScreen>{
               ),
               Expanded(
                 child: TextField(
+                  controller: passwordController, // Tambahkan ini
                   obscureText: _obscureText,
                   style: TextStyle(
                     color: Colors.black,
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      password = value;
-                    });
-                  },
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Password",
@@ -260,15 +311,11 @@ class _RegisterScreenState extends State<RegisterScreen>{
               ),
               Expanded(
                 child: TextField(
+                  controller: confirmPasswordController, // Tambahkan ini
                   obscureText: _obscureText,
                   style: TextStyle(
                     color: Colors.black,
                   ),
-                  onChanged: (value) {
-                    setState(() {
-                      confirmPassword = value;
-                    });
-                  },
                   decoration: InputDecoration(
                     border: InputBorder.none,
                     hintText: "Confirm Password",
@@ -305,8 +352,8 @@ class _RegisterScreenState extends State<RegisterScreen>{
       width: double.infinity,
       child: ElevatedButton(
         onPressed: () {
-          if (password == confirmPassword) {
-            print("Register Pressed");
+          if (passwordController.text == confirmPasswordController.text) {
+           registerUser();
           } else {
             showDialog(
               context: context,

@@ -56,7 +56,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
     _apiLogin = await serviceLogin.login();
 
-    // // print(_apiLogin?.data?.access_token);
+    print(_apiLogin?.data?.access_token);
     //============================================
 
     _apiCategory = await serviceCategory.getCategoryList();
@@ -70,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     //     await serviceEvent.getEventCategoryListLimit(idsCategory);
 
     _apiEventList = await serviceEvent.getEventListLimit(3);
+
     setState(() {
       _isLoading = false;
     });
