@@ -36,6 +36,10 @@ dependencies:
   cupertino_icons: ^1.0.2
   flutter_native_splash: ^2.3.4
 
+  provider:
+  shared_preferences:
+  http:
+  get_it:
 
 dev_dependencies:
   flutter_test:
@@ -43,8 +47,8 @@ dev_dependencies:
   font_awesome_flutter:
   intl:
   image_picker:
-  http:
-  shared_preferences:
+  dio:
+
   carousel_slider: ^4.2.1
 
   # The "flutter_lints" package below contains a set of recommended lints to
