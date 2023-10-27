@@ -1,10 +1,13 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
+import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:clean_code/Screen/CreateMeetingScreen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class DetailEvent extends StatefulWidget {
   int idEvent;
@@ -48,6 +51,16 @@ class _DetailEventState extends State<DetailEvent>
     });
   }
 
+  Future<void> removeAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token');
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,7 +72,7 @@ class _DetailEventState extends State<DetailEvent>
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => print("image clicked"),
+            onPressed: () => removeAccessToken(),
             icon: CircleAvatar(
               radius: 55.0,
               backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
@@ -280,6 +293,13 @@ class _DetailEventState extends State<DetailEvent>
           setState(() {
             _selectedIndex = index;
           });
+          if (_selectedIndex == 0) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ));
+          }
         },
       ),
     );

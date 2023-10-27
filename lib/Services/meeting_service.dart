@@ -6,14 +6,15 @@ import 'package:clean_code/Models/meeting_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MeetingService {
   static const baseurl = 'https://activity-connect.projectdira.my.id/public';
   static const API = 'https://activity-connect.projectdira.my.id/public/api';
-  static const headers = {
-    'Authorization':
-        'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjdGl2aXR5LWNvbm5lY3QucHJvamVjdGRpcmEubXkuaWQvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NDA2NDk0LCJleHAiOjE2OTg0MTAwOTQsIm5iZiI6MTY5ODQwNjQ5NCwianRpIjoiWFJhSWRoYUhQc2JPT2VkdyIsInN1YiI6IjMiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.MBwKnNOD42L56ftw6rYVWqtUr8XQ1HdWJmaIxhmt0JU',
-  };
+  // static const headers = {
+  //   'Authorization':
+  //       'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjdGl2aXR5LWNvbm5lY3QucHJvamVjdGRpcmEubXkuaWQvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NDA2NDk0LCJleHAiOjE2OTg0MTAwOTQsIm5iZiI6MTY5ODQwNjQ5NCwianRpIjoiWFJhSWRoYUhQc2JPT2VkdyIsInN1YiI6IjMiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.MBwKnNOD42L56ftw6rYVWqtUr8XQ1HdWJmaIxhmt0JU',
+  // };
 
   // Future<APIResponse<List<MeetingModel>>> getMeetingList() {
   //   return http.get(Uri.parse('${API}/meet/')).then((data) {
@@ -40,6 +41,11 @@ class MeetingService {
   //   }).catchError((_) => APIResponse<List<MeetingModel>>(
   //       data: [], error: true, errorMessage: 'An error occured'));
   // }
+
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
 
   Future<APIResponse<List<MeetingModel>>> getMeetingListLimit(limit) {
     return http.get(Uri.parse('${API}/meet?limit=${limit}')).then((data) {
@@ -70,6 +76,10 @@ class MeetingService {
 
   Future<APIResponse<MeetingModel>> createMeeting(
       id_event, title, description, people) {
+    var access_token = getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
     final user = {
       'event_id': id_event,
       'name': title,

@@ -7,7 +7,7 @@ import 'package:clean_code/Models/login_model.dart';
 import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
-import 'package:clean_code/services/auth_service.dart';
+import 'package:clean_code/Services/auth_service.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/meeting_service.dart';
@@ -16,6 +16,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
 import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -81,6 +82,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     setState(() {
       _isLoading = false;
     });
+  }
+
+  Future<void> removeAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('access_token');
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => LoginScreen(),
+        ));
   }
 
   @override
@@ -288,6 +299,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ),
         actions: <Widget>[
           IconButton(
+            onPressed: () => removeAccessToken(),
+            icon: Icon(Icons.exit_to_app),
+            color: Color(0xFF3188FA),
+          ),
+          SizedBox(width: 5), // Spasi antara gambar dan tombol logout
+
+          IconButton(
             onPressed: () => print("image clicked"),
             icon: CircleAvatar(
               radius: 55.0,
@@ -461,6 +479,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           setState(() {
             _selectedIndex = index;
           });
+          if (_selectedIndex == 0) {
+            Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => HomeScreen(),
+                ));
+          }
         },
       ),
     );
