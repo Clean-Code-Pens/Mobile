@@ -1,7 +1,15 @@
+import 'package:clean_code/Models/api_response.dart';
+import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Screen/DetailEventScreen.dart';
+import 'package:clean_code/Services/meeting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:get_it/get_it.dart';
 
 class CreateMeeting extends StatefulWidget {
+  int idEvent;
+
+  CreateMeeting({required this.idEvent});
   @override
   _CreateMeetingState createState() => _CreateMeetingState();
 }
@@ -9,6 +17,13 @@ class CreateMeeting extends StatefulWidget {
 class _CreateMeetingState extends State<CreateMeeting>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
+
+  MeetingService get serviceMeeting => GetIt.I<MeetingService>();
+  APIResponse<MeetingModel>? _apiMeetingCreate;
+
+  TextEditingController titleController = TextEditingController();
+  TextEditingController peopleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +97,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                       ],
                     ),
                     child: TextField(
+                      controller: titleController,
                       keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
@@ -119,6 +135,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                       ],
                     ),
                     child: TextField(
+                      controller: peopleController,
                       keyboardType: TextInputType.number,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
@@ -156,6 +173,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                       ],
                     ),
                     child: TextField(
+                      controller: descriptionController,
                       textAlign: TextAlign.left,
                       keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
@@ -172,27 +190,113 @@ class _CreateMeetingState extends State<CreateMeeting>
                   SizedBox(
                     height: 15,
                   ),
-                  InkWell(
-                    child: Container(
-                      margin: EdgeInsets.symmetric(horizontal: 2.0),
-                      width: double.maxFinite,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        color: Color(0xFF3188FA),
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 10),
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        final title = titleController.text;
+                        final people = peopleController.text;
+                        final description = descriptionController.text;
+                        print(people);
+
+                        if (title.isEmpty ||
+                            people.isEmpty ||
+                            description.isEmpty) {
+                          final errorMessage =
+                              'Email dan password harus diisi.';
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: Text('Error'),
+                              content: Text(errorMessage),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: Text('OK'),
+                                ),
+                              ],
+                            ),
+                          );
+                          return;
+                        }
+
+                        // Lanjutkan dengan permintaan login ke server
+                        _apiMeetingCreate = await serviceMeeting.createMeeting(
+                            widget.idEvent.toString(),
+                            title,
+                            description,
+                            people);
+                        if (_apiMeetingCreate != null) {
+                          print(_apiMeetingCreate?.errorMessage);
+                          if (_apiMeetingCreate?.error == true) {
+                            showDialog(
+                              context: context,
+                              builder: (context) => AlertDialog(
+                                title: Text('Error'),
+                                content: Text(
+                                    _apiMeetingCreate?.errorMessage ?? 'Error'),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () =>
+                                        Navigator.of(context).pop(),
+                                    child: Text('OK'),
+                                  ),
+                                ],
+                              ),
+                            );
+                          } else {
+                            // final prefs = await SharedPreferences.getInstance();
+                            // prefs.setString(
+                            //     'access_token',
+                            //     _apiMeetingCreate?.data?.access_token ??
+                            //         'access_token');
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DetailEvent(idEvent: widget.idEvent),
+                                ));
+                          }
+                        }
+                        // ...
+                      },
+                      style: ButtonStyle(
+                        elevation: MaterialStateProperty.all(5),
+                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        )),
+                        backgroundColor:
+                            MaterialStateProperty.all(Colors.blueAccent),
                       ),
-                      child: Align(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: EdgeInsets.only(top: 15, bottom: 15),
-                          child: Text(
-                            'New Meeting',
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
+                      child: Text(
+                        "New Meeting",
+                        style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.height / 50),
                       ),
                     ),
-                    onTap: () => print("seemore"),
                   ),
+                  // InkWell(
+                  //   child: Container(
+                  //     margin: EdgeInsets.symmetric(horizontal: 2.0),
+                  //     width: double.maxFinite,
+                  //     decoration: BoxDecoration(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //       color: Color(0xFF3188FA),
+                  //     ),
+                  //     child: Align(
+                  //       alignment: Alignment.center,
+                  //       child: Padding(
+                  //         padding: EdgeInsets.only(top: 15, bottom: 15),
+                  //         child: Text(
+                  //           'New Meeting',
+                  //           style: TextStyle(color: Colors.white),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   onTap: () => print("seemore"),
+                  // ),
                 ],
               ),
             ],

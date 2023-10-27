@@ -4,10 +4,12 @@ import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/category_model.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/login_model.dart';
+import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Services/auth_service.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/event_service.dart';
+import 'package:clean_code/Services/meeting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/services.dart';
@@ -25,13 +27,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   // nyeluk service e di dadekno variabel
   AuthService get serviceLogin => GetIt.I<AuthService>();
   EventService get serviceEvent => GetIt.I<EventService>();
+  MeetingService get serviceMeeting => GetIt.I<MeetingService>();
   CategoryService get serviceCategory => GetIt.I<CategoryService>();
 
   // deklarasi variabel dinggo nyimpen return api
   APIResponse<LoginModel>? _apiLogin;
   APIResponse<List<CategoryModel>>? _apiCategory;
   APIResponse<List<EventModel>>? _apiEventList;
-  List<APIResponse<List<EventModel>>>? _apiEventCategoryList;
+  APIResponse<List<MeetingModel>>? _apiMeetingList;
+  List<APIResponse<List<EventModel>>>? _apiEventCategoryList = [];
 
   bool _isLoading = false;
 
@@ -54,43 +58,228 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // hasil e wes sesuai variabel sing dingge nyimpen data.
     // file file sing digunakno Service/auth_service.dart, Models/login_model.dart
 
-    _apiLogin = await serviceLogin.login();
+    // _apiLogin = await serviceLogin.login();
 
     print(_apiLogin?.data?.access_token);
     //============================================
 
     _apiCategory = await serviceCategory.getCategoryList();
 
-    // int? categoryLength = _apiCategory?.data.length;
-    // List idsCategory = [];
-    // for (var i = 0; i < categoryLength!; i++) {
-    //   idsCategory.add(_apiCategory?.data?[i].id);
-    // }
-    // _apiEventCategoryList =
-    //     await serviceEvent.getEventCategoryListLimit(idsCategory);
+    // List eventCategory = [];
+    for (var i = 0; i < _apiCategory!.data.length; i++) {
+      APIResponse<List<EventModel>> responseEventCategory = await serviceEvent
+          .getEventCategoryListLimit(_apiCategory?.data?[i].id, 3);
+      _apiEventCategoryList?.add(responseEventCategory);
+    }
+
+    // print(_apiCategory?.data?.length);
+    // print(_apiEventCategoryList?.length);
 
     _apiEventList = await serviceEvent.getEventListLimit(3);
 
+    // _apiEventList = await serviceEvent.getEventListLimit(3);
+    _apiMeetingList = await serviceMeeting.getMeetingListLimit(3);
     setState(() {
       _isLoading = false;
     });
   }
 
   @override
-  List<Widget> kategori() {
+  List<Widget> category() {
     List<Widget> tabs = [];
-    for (var i = 0; i < 3; i++) {
+    // int categoryLength = _apiCategory != null ? _apiCategory.data.length : 0;
+    int categoryLength = _apiCategory?.data?.length ?? 0;
+    // print(_apiCategory?.data.length);
+    for (var i = 0; i < categoryLength; i++) {
       final tab = Tab(
         text: _apiCategory?.data[i]?.name ?? 'Not Found',
       );
       tabs.add(tab);
     }
+    print(tabs);
     return tabs;
   }
 
   @override
+  List<Widget> eventCategoryList() {
+    List<Widget> eventsCategory = [];
+    int categoryLength = _apiCategory?.data?.length ?? 0;
+    // print(categoryLength);
+    for (var i = 0; i < categoryLength; i++) {
+      int eventCategoryLength = _apiEventCategoryList?[i].data?.length ?? 0;
+      final eventCategory = Container(
+        width: double.maxFinite,
+        height: 100,
+        child: ListView.builder(
+            itemCount: _apiEventCategoryList?[i].data?.length ?? 0,
+            scrollDirection: Axis.horizontal,
+            itemBuilder: (_, index) {
+              if (index == eventCategoryLength) {
+                return InkWell(
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 2.0),
+                    width: 100,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.arrow_circle_right_outlined,
+                          size: 25,
+                          color: Color(0xFF3188FA),
+                        ),
+                        Text(
+                          'See More',
+                          style: TextStyle(color: Color(0xFF3188FA)),
+                        )
+                      ],
+                    ),
+                  ),
+                  onTap: () => print("seemore"),
+                );
+              }
+              return InkWell(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2.0),
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                    image: DecorationImage(
+                      image: NetworkImage(
+                          _apiEventCategoryList?[i].data[index]?.imgUrl ??
+                              'Not Found'),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.all(5.0),
+                    child: Align(
+                      alignment: Alignment.bottomLeft,
+                      child: Text(
+                        _apiEventCategoryList?[i].data[index]?.name ??
+                            'Not Found',
+                        // child: Text(
+                        //   _apiEventList
+                        //           ?.data[index]?.name ??
+                        //       'Not Found',
+                        style: TextStyle(
+                          fontSize: 12.0,
+                          // fontFamily: "Explora",
+                          color: Colors.white,
+                          // fontWeight: FontWeight.w900),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => DetailEvent(
+                          idEvent:
+                              _apiEventCategoryList?[i].data[index]?.id ?? 0,
+                        ),
+                      ));
+                },
+              );
+            }),
+      );
+      eventsCategory.add(eventCategory);
+    }
+    print(eventsCategory);
+    return eventsCategory;
+  }
+
+  @override
+  Widget meetings() {
+    return Container(
+      width: double.maxFinite,
+      height: 100,
+      child: ListView.builder(
+          itemCount: _apiMeetingList?.data?.length ?? 0,
+          scrollDirection: Axis.horizontal,
+          itemBuilder: (_, index) {
+            if (index == 5 - 1) {
+              return InkWell(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2.0),
+                  width: 100,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.white,
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.arrow_circle_right_outlined,
+                        size: 25,
+                        color: Color(0xFF3188FA),
+                      ),
+                      Text(
+                        'See More',
+                        style: TextStyle(color: Color(0xFF3188FA)),
+                      )
+                    ],
+                  ),
+                ),
+                onTap: () => print("seemore"),
+              );
+            }
+            return InkWell(
+              child: Container(
+                margin: EdgeInsets.symmetric(horizontal: 2.0),
+                width: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: Colors.white,
+                  image: DecorationImage(
+                    image: AssetImage('assets/masjid-nabawi-1.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.all(5.0),
+                  child: Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      _apiMeetingList?.data?[index].name ?? 'Not Found',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                        // fontFamily: "Explora",
+                        color: Colors.white,
+                        // fontWeight: FontWeight.w900),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailEvent(
+                        idEvent: int.parse(
+                            _apiMeetingList?.data[index]?.id_event ?? '0'),
+                      ),
+                    ));
+              },
+            );
+          }),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
-    TabController _tabController = TabController(length: 3, vsync: this);
+    TabController _tabController =
+        TabController(length: _apiCategory?.data?.length ?? 0, vsync: this);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -111,6 +300,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       body: Builder(
         builder: (_) {
+          if (_isLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -178,7 +372,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           controller: _tabController,
                           labelColor: Colors.black,
                           unselectedLabelColor: Colors.grey,
-                          tabs: kategori(),
+                          tabs: category(),
                           // [
                           //   Tab(
                           //     text: 'sdawd',
@@ -200,287 +394,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         height: 100,
                         child: TabBarView(
                           controller: _tabController,
-                          children: [
-                            Container(
-                              width: double.maxFinite,
-                              height: 100,
-                              child: ListView.builder(
-                                  itemCount: 4,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (_, index) {
-                                    if (index == 3) {
-                                      return InkWell(
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 2.0),
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.white,
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons
-                                                    .arrow_circle_right_outlined,
-                                                size: 25,
-                                                color: Color(0xFF3188FA),
-                                              ),
-                                              Text(
-                                                'See More',
-                                                style: TextStyle(
-                                                    color: Color(0xFF3188FA)),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        onTap: () => print("seemore"),
-                                      );
-                                    }
-                                    return InkWell(
-                                      child: Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 2.0),
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: Colors.white,
-                                          image: DecorationImage(
-                                            image: NetworkImage(_apiEventList
-                                                    ?.data[index]?.imgUrl ??
-                                                'Not Found'),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Text(
-                                              _apiEventList
-                                                      ?.data[index]?.name ??
-                                                  'Not Found',
-                                              // child: Text(
-                                              //   _apiEventList
-                                              //           ?.data[index]?.name ??
-                                              //       'Not Found',
-                                              style: TextStyle(
-                                                fontSize: 12.0,
-                                                // fontFamily: "Explora",
-                                                color: Colors.white,
-                                                // fontWeight: FontWeight.w900),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DetailEvent(
-                                                idEvent: _apiEventList
-                                                        ?.data[index]?.id ??
-                                                    0,
-                                              ),
-                                            ));
-                                      },
-                                    );
-                                  }),
-                            ),
-                            Container(
-                              width: double.maxFinite,
-                              height: 100,
-                              child: ListView.builder(
-                                  itemCount: 4,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (_, index) {
-                                    if (index == 3) {
-                                      return InkWell(
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 2.0),
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.white,
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons
-                                                    .arrow_circle_right_outlined,
-                                                size: 25,
-                                                color: Color(0xFF3188FA),
-                                              ),
-                                              Text(
-                                                'See More',
-                                                style: TextStyle(
-                                                    color: Color(0xFF3188FA)),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        onTap: () => print("seemore"),
-                                      );
-                                    }
-                                    return InkWell(
-                                      child: Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 2.0),
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: Colors.white,
-                                          image: DecorationImage(
-                                            image: NetworkImage(_apiEventList
-                                                    ?.data[index]?.imgUrl ??
-                                                'Not Found'),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Text(
-                                              _apiEventList
-                                                      ?.data[index]?.name ??
-                                                  'Not Found',
-                                              // child: Text(
-                                              //   _apiEventList
-                                              //           ?.data[index]?.name ??
-                                              //       'Not Found',
-                                              style: TextStyle(
-                                                fontSize: 12.0,
-                                                // fontFamily: "Explora",
-                                                color: Colors.white,
-                                                // fontWeight: FontWeight.w900),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DetailEvent(
-                                                idEvent: _apiEventList
-                                                        ?.data[index]?.id ??
-                                                    0,
-                                              ),
-                                            ));
-                                      },
-                                    );
-                                  }),
-                            ),
-                            Container(
-                              width: double.maxFinite,
-                              height: 100,
-                              child: ListView.builder(
-                                  itemCount: 4,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (_, index) {
-                                    if (index == 3) {
-                                      return InkWell(
-                                        child: Container(
-                                          margin: EdgeInsets.symmetric(
-                                              horizontal: 2.0),
-                                          width: 100,
-                                          decoration: BoxDecoration(
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                            color: Colors.white,
-                                          ),
-                                          child: Column(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            children: [
-                                              Icon(
-                                                Icons
-                                                    .arrow_circle_right_outlined,
-                                                size: 25,
-                                                color: Color(0xFF3188FA),
-                                              ),
-                                              Text(
-                                                'See More',
-                                                style: TextStyle(
-                                                    color: Color(0xFF3188FA)),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                        onTap: () => print("seemore"),
-                                      );
-                                    }
-                                    return InkWell(
-                                      child: Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 2.0),
-                                        width: 100,
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(10),
-                                          color: Colors.white,
-                                          image: DecorationImage(
-                                            image: NetworkImage(_apiEventList
-                                                    ?.data[index]?.imgUrl ??
-                                                'Not Found'),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        child: Padding(
-                                          padding: EdgeInsets.all(5.0),
-                                          child: Align(
-                                            alignment: Alignment.bottomLeft,
-                                            child: Text(
-                                              _apiEventList
-                                                      ?.data[index]?.name ??
-                                                  'Not Found',
-                                              // child: Text(
-                                              //   _apiEventList
-                                              //           ?.data[index]?.name ??
-                                              //       'Not Found',
-                                              style: TextStyle(
-                                                fontSize: 12.0,
-                                                // fontFamily: "Explora",
-                                                color: Colors.white,
-                                                // fontWeight: FontWeight.w900),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) => DetailEvent(
-                                                idEvent: _apiEventList
-                                                        ?.data[index]?.id ??
-                                                    0,
-                                              ),
-                                            ));
-                                      },
-                                    );
-                                  }),
-                            ),
-                          ],
+                          children: eventCategoryList(),
                         ),
                       ),
                     ],
@@ -504,78 +418,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       SizedBox(
                         height: 8,
                       ),
-                      Container(
-                        width: double.maxFinite,
-                        height: 100,
-                        child: ListView.builder(
-                            itemCount: 5,
-                            scrollDirection: Axis.horizontal,
-                            itemBuilder: (_, index) {
-                              if (index == 5 - 1) {
-                                return InkWell(
-                                  child: Container(
-                                    margin:
-                                        EdgeInsets.symmetric(horizontal: 2.0),
-                                    width: 100,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(10),
-                                      color: Colors.white,
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Icon(
-                                          Icons.arrow_circle_right_outlined,
-                                          size: 25,
-                                          color: Color(0xFF3188FA),
-                                        ),
-                                        Text(
-                                          'See More',
-                                          style: TextStyle(
-                                              color: Color(0xFF3188FA)),
-                                        )
-                                      ],
-                                    ),
-                                  ),
-                                  onTap: () => print("seemore"),
-                                );
-                              }
-                              return InkWell(
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(horizontal: 2.0),
-                                  width: 100,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white,
-                                    image: DecorationImage(
-                                      image: AssetImage(
-                                          "assets/masjid-nabawi-1.jpg"),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                  child: Padding(
-                                    padding: EdgeInsets.all(5.0),
-                                    child: Align(
-                                      alignment: Alignment.bottomLeft,
-                                      child: const Text(
-                                        'Konser Noah',
-                                        style: TextStyle(
-                                          fontSize: 12.0,
-                                          // fontFamily: "Explora",
-                                          color: Colors.white,
-                                          // fontWeight: FontWeight.w900),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                onTap: () => print("jnad"),
-                              );
-                            }),
-                      ),
+                      meetings(),
                     ],
                   ),
                 ),

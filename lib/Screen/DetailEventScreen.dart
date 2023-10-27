@@ -197,25 +197,57 @@ class _DetailEventState extends State<DetailEvent>
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => CreateMeeting()));
+                              builder: (context) => CreateMeeting(
+                                  idEvent: _apiDetailEvent?.data?.id ?? 0)));
                     },
                   ),
                   SizedBox(
                     height: 20,
                   ),
-                  Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        const ListTile(
-                          leading: Icon(Icons.album),
-                          title: Text('The Enchanted Nightingale'),
-                          subtitle: Text(
-                              'Music by Julie Gable. Lyrics by Sidney Stein.'),
-                        ),
-                      ],
+                  InkWell(
+                    child: Card(
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          const ListTile(
+                            leading: Icon(Icons.album),
+                            title: Text('The Enchanted Nightingale'),
+                            subtitle: Text(
+                                'Music by Julie Gable. Lyrics by Sidney Stein.'),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: Center(
+                              child: Text('Modal Title'),
+                            ),
+                            content: Text('Ajukan pertemuan'),
+                            // content: Container(
+                            //   child: Column(
+                            //     children: [
+
+                            //     ],
+                            //   ),
+                            // ),
+                            actions: <Widget>[
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.of(context)
+                                      .pop(); // Close the modal
+                                },
+                                child: Text('Iya'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    },
+                  )
                 ],
               ),
             ),
