@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
+import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Models/user_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 import 'package:intl/intl.dart';
@@ -220,17 +222,35 @@ class EventService {
   Future<APIResponse<EventModel>> getDetailEvent(int idEvent) {
     return http.get(Uri.parse('${API}/event/${idEvent}')).then((data) {
       if (data.statusCode == 200) {
-        final item = jsonDecode(data.body)['data'];
+        final jsonData = jsonDecode(data.body)['data'];
+        final meets = jsonDecode(data.body)['data']['meets'];
+        final listMeet = <MeetingModel>[];
+        for (var i = 0; i < meets.length; i++) {
+          final meet = MeetingModel(
+            id: meets[i]['id'],
+            name: meets[i]['name'],
+            description: meets[i]['description'],
+            user: UserModel(
+                id: meets[i]['user']['id'], name: meets[i]['user']['name']),
+            id_event: meets[i]['event_id'],
+            people_need: meets[i]['people_need'],
+          );
+          listMeet.add(meet);
+        }
+        // meets.forEach((k, item) {
+        // });
         // String image = API + item["image"];
         final event = EventModel(
-            id: item['id'],
-            name: item['name'],
-            description: item['description'],
-            place: item['place'],
-            address: item['address'],
-            date: DateFormat('EEEE, MMMM d y')
-                .format(DateTime.parse(item['date'])),
-            imgUrl: baseurl + item["image"]);
+          id: jsonData['id'],
+          name: jsonData['name'],
+          description: jsonData['description'],
+          place: jsonData['place'],
+          address: jsonData['address'],
+          date: DateFormat('EEEE, MMMM d y')
+              .format(DateTime.parse(jsonData['date'])),
+          imgUrl: baseurl + jsonData["image"],
+          meetings: listMeet,
+        );
         return APIResponse<EventModel>(data: event, errorMessage: '');
       }
       return APIResponse<EventModel>(

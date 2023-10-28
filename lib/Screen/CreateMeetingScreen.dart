@@ -49,11 +49,48 @@ class _CreateMeetingState extends State<CreateMeeting>
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => removeAccessToken(),
-            icon: CircleAvatar(
-              radius: 55.0,
-              backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Center(
+                      child: Text('Logout Confirm'),
+                    ),
+                    content: Text('Apakah anda yakin akan keluar?'),
+                    // content: Container(
+                    //   child: Column(
+                    //     children: [
+
+                    //     ],
+                    //   ),
+                    // ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          removeAccessToken(); // Close the modal
+                        },
+                        child: Text('Logout'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the modal
+                        },
+                        child: Text('Batal'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: Icon(
+              Icons.person,
+              color: Color(0xFF3188FA),
             ),
+            // icon: CircleAvatar(
+            //   radius: 55.0,
+            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+            // ),
           )
         ],
         backgroundColor: Colors.white,

@@ -1,8 +1,10 @@
+import 'package:clean_code/Models/user_model.dart';
+
 class MeetingModel {
   int? id;
   String? name;
   String? description;
-  String? id_user;
+  UserModel? user;
   String? id_event;
   String? people_need;
 
@@ -10,7 +12,7 @@ class MeetingModel {
     this.id,
     this.name,
     this.description,
-    this.id_user,
+    this.user,
     this.id_event,
     this.people_need,
   });

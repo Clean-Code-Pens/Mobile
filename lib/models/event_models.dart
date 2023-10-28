@@ -1,3 +1,5 @@
+import 'package:clean_code/Models/meeting_model.dart';
+
 class EventModel {
   int? id;
   String? name;
@@ -6,6 +8,7 @@ class EventModel {
   String? place;
   String? address;
   String? date;
+  List<MeetingModel>? meetings;
 
   EventModel({
     this.id,
@@ -15,5 +18,6 @@ class EventModel {
     this.place,
     this.address,
     this.date,
+    this.meetings,
   });
 }

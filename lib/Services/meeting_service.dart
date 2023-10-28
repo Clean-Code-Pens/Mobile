@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Models/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -59,7 +60,9 @@ class MeetingService {
             id: jsonData["data"][i]['id'],
             name: jsonData["data"][i]['name'],
             description: jsonData["data"][i]['description'],
-            id_user: jsonData["data"][i]['user_id'],
+            user: UserModel(
+                id: jsonData["data"][i]['user']['id'],
+                name: jsonData["data"][i]['user']['name']),
             id_event: jsonData["data"][i]['event_id'],
             people_need: jsonData["data"][i]['people_need'],
           );
@@ -75,8 +78,8 @@ class MeetingService {
   }
 
   Future<APIResponse<MeetingModel>> createMeeting(
-      id_event, title, description, people) {
-    var access_token = getAccessToken();
+      id_event, title, description, people) async {
+    String? access_token = await getAccessToken();
     final headers = {
       'Authorization': 'Bearer ${access_token}',
     };
@@ -90,7 +93,7 @@ class MeetingService {
         .post(Uri.parse('${API}/meet/create'), headers: headers, body: user)
         .then((data) {
       //   return APIResponse<MeetingModel>(
-      //       data: MeetingModel(), errorMessage: jsonDecode(data.body).toString());
+      //   // data: MeetingModel(), errorMessage: jsonDecode(data.body).toString());
       // });
       if (data.statusCode == 200) {
         final jsonData = jsonDecode(data.body);
@@ -98,7 +101,7 @@ class MeetingService {
           id: jsonData['data']['id'],
           name: jsonData['data']['name'],
           id_event: jsonData['data']['event_id'],
-          id_user: jsonData['data']['user_id'],
+          user: UserModel(),
           description: jsonData['data']['description'],
           people_need: jsonData['data']['people_need'],
         );
@@ -246,4 +249,48 @@ class MeetingService {
   //       error: true,
   //       errorMessage: 'An error occured'));
   // }
+  Future<APIResponse<MeetingModel>> getDetailMeeting(int idMeeting) {
+    return http.get(Uri.parse('${API}/meet/${idMeeting}')).then((data) {
+      if (data.statusCode == 200) {
+        final meets = jsonDecode(data.body)['data'];
+        // final listMeet = <MeetingModel>[];
+        final meet = MeetingModel(
+          id: meets['id'],
+          name: meets['name'],
+          description: meets['description'],
+          user: UserModel(id: meets['user']['id'], name: meets['user']['name']),
+          id_event: meets['event_id'],
+          people_need: meets['people_need'],
+        );
+
+        return APIResponse<MeetingModel>(data: meet, errorMessage: '');
+      }
+      return APIResponse<MeetingModel>(
+          data: MeetingModel(), error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<MeetingModel>(
+        data: MeetingModel(), error: true, errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse> joinMeet(String idMeeting) async {
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    final post = {
+      'meet_id': idMeeting,
+    };
+    return http
+        .post(Uri.parse('${API}/meet-request/create'),
+            body: post, headers: headers)
+        .then((data) {
+      if (data.statusCode == 200) {
+        return APIResponse(data: jsonDecode(data.body), errorMessage: '');
+      }
+      return APIResponse(
+          data: MeetingModel(), error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse(
+            data: MeetingModel(),
+            error: true,
+            errorMessage: 'An error occured'));
+  }
 }

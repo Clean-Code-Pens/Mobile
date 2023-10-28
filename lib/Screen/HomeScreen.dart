@@ -94,6 +94,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         ));
   }
 
+  int itemCountCarousel(length) {
+    if (length >= 3) {
+      return length + 1;
+    }
+    return length;
+  }
+
   @override
   List<Widget> category() {
     List<Widget> tabs = [];
@@ -121,10 +128,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         width: double.maxFinite,
         height: 100,
         child: ListView.builder(
-            itemCount: _apiEventCategoryList?[i].data?.length ?? 0,
+            itemCount: itemCountCarousel(eventCategoryLength),
             scrollDirection: Axis.horizontal,
             itemBuilder: (_, index) {
-              if (index == eventCategoryLength) {
+              if (index == 3) {
                 return InkWell(
                   child: Container(
                     margin: EdgeInsets.symmetric(horizontal: 2.0),
@@ -193,7 +200,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                       MaterialPageRoute(
                         builder: (context) => DetailEvent(
                           idEvent:
-                          _apiEventCategoryList?[i].data[index]?.id ?? 0,
+                              _apiEventCategoryList?[i].data[index]?.id ?? 0,
                         ),
                       ));
                 },
@@ -208,14 +215,15 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
 
   @override
   Widget meetings() {
+    int meetingLength = _apiMeetingList?.data?.length ?? 0;
     return Container(
       width: double.maxFinite,
       height: 100,
       child: ListView.builder(
-          itemCount: _apiMeetingList?.data?.length ?? 0,
+          itemCount: itemCountCarousel(meetingLength),
           scrollDirection: Axis.horizontal,
           itemBuilder: (_, index) {
-            if (index == 5 - 1) {
+            if (index == 3) {
               return InkWell(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 2.0),
@@ -289,7 +297,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     TabController _tabController =
-    TabController(length: _apiCategory?.data?.length ?? 0, vsync: this);
+        TabController(length: _apiCategory?.data?.length ?? 0, vsync: this);
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -298,19 +306,57 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
         actions: <Widget>[
-          IconButton(
-            onPressed: () => removeAccessToken(),
-            icon: Icon(Icons.exit_to_app),
-            color: Color(0xFF3188FA),
-          ),
-          SizedBox(width: 5), // Spasi antara gambar dan tombol logout
+          // IconButton(
+          //   onPressed: () => removeAccessToken(),
+          //   icon: Icon(Icons.exit_to_app),
+          //   color: Color(0xFF3188FA),
+          // ),
+          // SizedBox(width: 5), // Spasi antara gambar dan tombol logout
 
           IconButton(
-            onPressed: () => print("image clicked"),
-            icon: CircleAvatar(
-              radius: 55.0,
-              backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Center(
+                      child: Text('Logout Confirm'),
+                    ),
+                    content: Text('Apakah anda yakin akan keluar?'),
+                    // content: Container(
+                    //   child: Column(
+                    //     children: [
+
+                    //     ],
+                    //   ),
+                    // ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          removeAccessToken(); // Close the modal
+                        },
+                        child: Text('Logout'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the modal
+                        },
+                        child: Text('Batal'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: Icon(
+              Icons.person,
+              color: Color(0xFF3188FA),
             ),
+            // icon: CircleAvatar(
+            //   radius: 55.0,
+            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+            //   // backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+            // ),
           )
         ],
         backgroundColor: Colors.white,
@@ -336,7 +382,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ),
                   ),
                   items: [1, 2, 3, 4, 5].map(
-                        (i) {
+                    (i) {
                       return Builder(
                         builder: (BuildContext context) {
                           return Container(
@@ -344,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image:
-                                  AssetImage("assets/masjid-nabawi-1.jpg"),
+                                      AssetImage("assets/masjid-nabawi-1.jpg"),
                                   fit: BoxFit.cover,
                                 ),
                                 // borderRadius: BorderRadius.only(

@@ -1,3 +1,5 @@
+import 'package:clean_code/Models/user_model.dart';
+
 class LoginModel {
   String? access_token;
   UserModel? user;
@@ -5,15 +7,5 @@ class LoginModel {
   LoginModel({
     this.access_token,
     this.user,
-  });
-}
-
-class UserModel {
-  int id;
-  String name;
-
-  UserModel({
-    required this.id,
-    required this.name,
   });
 }

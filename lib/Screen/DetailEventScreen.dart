@@ -1,8 +1,10 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
+import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Services/event_service.dart';
+import 'package:clean_code/Services/meeting_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -30,8 +32,12 @@ class _DetailEventState extends State<DetailEvent>
   int _selectedIndex = 0;
 
   EventService get service => GetIt.I<EventService>();
-
   APIResponse<EventModel>? _apiDetailEvent;
+
+  MeetingService get meetingService => GetIt.I<MeetingService>();
+  APIResponse<MeetingModel>? _apiDetailMeeting;
+  APIResponse? _apiJoinMeeting;
+
   bool _isLoading = false;
 
   @override
@@ -45,7 +51,6 @@ class _DetailEventState extends State<DetailEvent>
       _isLoading = true;
     });
     _apiDetailEvent = await service.getDetailEvent(idEvent);
-    print(_apiDetailEvent?.data.place);
     setState(() {
       _isLoading = false;
     });
@@ -62,6 +67,256 @@ class _DetailEventState extends State<DetailEvent>
   }
 
   @override
+  List<Widget> listMeeting() {
+    List<Widget> meetings = [];
+    // int categoryLength = _apiDetailEvent != null ? _apiDetailEvent.data.length : 0;
+    int meetingLength = _apiDetailEvent?.data?.meetings?.length ?? 0;
+    // print(_apiDetailEvent?.data.length);
+    for (var i = 0; i < meetingLength; i++) {
+      int id_meeting = _apiDetailEvent?.data?.meetings?[i].id ?? 0;
+      final meeting = Column(
+        children: [
+          InkWell(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(10)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 2,
+                    blurRadius: 3,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Padding(
+                padding: EdgeInsets.all(10),
+                child: Container(
+                  child: Row(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 8),
+                          child: Column(
+                            children: [
+                              Icon(Icons.person),
+                              Text(
+                                _apiDetailEvent
+                                        ?.data?.meetings?[i].user?.name ??
+                                    'Not Found',
+                                style: TextStyle(fontSize: 10),
+                              )
+                            ],
+                          ),
+                          // child: Icon(Icons.person),
+                        ),
+                      ),
+                      Expanded(
+                          child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              _apiDetailEvent?.data?.meetings?[i].name ??
+                                  'Not Found',
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.centerLeft,
+                            child: Row(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 8),
+                                    child: Icon(
+                                      Icons.people,
+                                      size: 15,
+                                    ),
+                                  ),
+                                ),
+                                Text(_apiDetailEvent
+                                        ?.data?.meetings?[i].people_need ??
+                                    'Not Found')
+                              ],
+                            ),
+                          )
+                        ],
+                      ))
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            onTap: () async {
+              _apiDetailMeeting =
+                  await meetingService.getDetailMeeting(id_meeting);
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Center(
+                      child: Text(_apiDetailEvent?.data?.meetings?[i].name ??
+                          'Not Found'),
+                    ),
+                    // content: Text('Ajukan pertemuan'),
+                    content: Container(
+                      height: 200,
+                      child: Column(
+                        children: [
+                          Container(
+                            child: Row(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 8),
+                                    child: Icon(Icons.person),
+                                    // child: Icon(Icons.person),
+                                  ),
+                                ),
+                                Text(_apiDetailEvent
+                                        ?.data?.meetings?[i].user?.name ??
+                                    'Not Found')
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Container(
+                            child: Row(
+                              children: [
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: Padding(
+                                    padding: EdgeInsets.only(right: 8),
+                                    child: Icon(
+                                      Icons.people,
+                                      size: 15,
+                                    ),
+                                    // child: Icon(Icons.person),
+                                  ),
+                                ),
+                                Text(
+                                    '${_apiDetailEvent?.data?.meetings?[i].people_need ?? '0'} orang')
+                              ],
+                            ),
+                          ),
+                          SizedBox(
+                            height: 8,
+                          ),
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.topLeft,
+                              child: Text(
+                                _apiDetailEvent
+                                        ?.data?.meetings?[i].description ??
+                                    '',
+                                maxLines: 3,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          InkWell(
+                            child: Container(
+                              margin: EdgeInsets.symmetric(horizontal: 2.0),
+                              width: double.maxFinite,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                color: Color(0xFF3188FA),
+                              ),
+                              child: Align(
+                                alignment: Alignment.center,
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 10, bottom: 10),
+                                  child: Text(
+                                    'Join',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            onTap: () async {
+                              _apiJoinMeeting = await meetingService
+                                  .joinMeet(id_meeting.toString());
+                              if (_apiJoinMeeting != null) {
+                                if (_apiJoinMeeting?.error == true) {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('Error'),
+                                      content: Text(
+                                          _apiJoinMeeting?.errorMessage ??
+                                              'Error'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: Text('Success'),
+                                      content:
+                                          Text('Berhasil request join meeting'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () =>
+                                              Navigator.of(context).pop(),
+                                          child: Text('OK'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                }
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    actions: <Widget>[
+                      Center()
+                      // TextButton(
+                      //   onPressed: () {
+                      //     Navigator.of(context).pop(); // Close the modal
+                      //   },
+                      //   child: Text('Iya'),
+                      // ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
+          SizedBox(
+            height: 8,
+          )
+        ],
+      );
+      meetings.add(meeting);
+    }
+    print(meetings);
+    return meetings;
+    // return ;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -72,11 +327,48 @@ class _DetailEventState extends State<DetailEvent>
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => removeAccessToken(),
-            icon: CircleAvatar(
-              radius: 55.0,
-              backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: Center(
+                      child: Text('Logout Confirm'),
+                    ),
+                    content: Text('Apakah anda yakin akan keluar?'),
+                    // content: Container(
+                    //   child: Column(
+                    //     children: [
+
+                    //     ],
+                    //   ),
+                    // ),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          removeAccessToken(); // Close the modal
+                        },
+                        child: Text('Logout'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(context).pop(); // Close the modal
+                        },
+                        child: Text('Batal'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: Icon(
+              Icons.person,
+              color: Color(0xFF3188FA),
             ),
+            // icon: CircleAvatar(
+            //   radius: 55.0,
+            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+            // ),
           )
         ],
         backgroundColor: Colors.white,
@@ -127,6 +419,7 @@ class _DetailEventState extends State<DetailEvent>
                               _apiDetailEvent?.data?.place ?? 'Not Found',
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontWeight: FontWeight.w700),
                             ),
                             Text(
                               _apiDetailEvent?.data?.address ?? 'Not Found',
@@ -161,16 +454,17 @@ class _DetailEventState extends State<DetailEvent>
                               _apiDetailEvent?.data?.date ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
+                              style: TextStyle(fontWeight: FontWeight.w700),
                             ),
                           ),
-                          Align(
-                            alignment: Alignment.centerLeft,
-                            child: Text(
-                              'Sursjdbawdnjw dawd qkwdb abayadiasdiuasidaisdb',
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
+                          // Align(
+                          //   alignment: Alignment.centerLeft,
+                          //   child: Text(
+                          //     'Sursjdbawdnjw dawd qkwdb abayadiasdiuasidaisdb',
+                          //     maxLines: 1,
+                          //     overflow: TextOverflow.ellipsis,
+                          //   ),
+                          // )
                         ],
                       ))
                     ],
@@ -217,50 +511,94 @@ class _DetailEventState extends State<DetailEvent>
                   SizedBox(
                     height: 20,
                   ),
-                  InkWell(
-                    child: Card(
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const ListTile(
-                            leading: Icon(Icons.album),
-                            title: Text('The Enchanted Nightingale'),
-                            subtitle: Text(
-                                'Music by Julie Gable. Lyrics by Sidney Stein.'),
-                          ),
-                        ],
-                      ),
-                    ),
-                    onTap: () {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Center(
-                              child: Text('Modal Title'),
-                            ),
-                            content: Text('Ajukan pertemuan'),
-                            // content: Container(
-                            //   child: Column(
-                            //     children: [
+                  Column(
+                    children: listMeeting(),
+                  ),
+                  // InkWell(
+                  //   child: Container(
+                  //     decoration: BoxDecoration(
+                  //       color: Colors.white,
+                  //       borderRadius: BorderRadius.all(Radius.circular(10)),
+                  //       boxShadow: [
+                  //         BoxShadow(
+                  //           color: Colors.grey.withOpacity(0.5),
+                  //           spreadRadius: 2,
+                  //           blurRadius: 3,
+                  //           offset: Offset(0, 3),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //     child: Padding(
+                  //       padding: EdgeInsets.all(10),
+                  //       child: Container(
+                  //         child: Row(
+                  //           children: [
+                  //             Align(
+                  //               alignment: Alignment.centerLeft,
+                  //               child: Padding(
+                  //                 padding: EdgeInsets.only(right: 8),
+                  //                 child: Icon(Icons.access_time_outlined),
+                  //               ),
+                  //             ),
+                  //             Expanded(
+                  //                 child: Column(
+                  //               mainAxisAlignment: MainAxisAlignment.start,
+                  //               crossAxisAlignment: CrossAxisAlignment.start,
+                  //               children: [
+                  //                 Align(
+                  //                   alignment: Alignment.centerLeft,
+                  //                   child: Text(
+                  //                     _apiDetailEvent?.data?.date ??
+                  //                         'Not Found',
+                  //                     maxLines: 1,
+                  //                     overflow: TextOverflow.ellipsis,
+                  //                   ),
+                  //                 ),
+                  //                 Align(
+                  //                   alignment: Alignment.centerLeft,
+                  //                   child: Text(
+                  //                     'Sursjdbawdnjw dawd qkwdb abayadiasdiuasidaisdb',
+                  //                     maxLines: 1,
+                  //                     overflow: TextOverflow.ellipsis,
+                  //                   ),
+                  //                 )
+                  //               ],
+                  //             ))
+                  //           ],
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  //   onTap: () {
+                  //     showDialog(
+                  //       context: context,
+                  //       builder: (BuildContext context) {
+                  //         return AlertDialog(
+                  //           title: Center(
+                  //             child: Text('Modal Title'),
+                  //           ),
+                  //           content: Text('Ajukan pertemuan'),
+                  //           // content: Container(
+                  //           //   child: Column(
+                  //           //     children: [
 
-                            //     ],
-                            //   ),
-                            // ),
-                            actions: <Widget>[
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context)
-                                      .pop(); // Close the modal
-                                },
-                                child: Text('Iya'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    },
-                  )
+                  //           //     ],
+                  //           //   ),
+                  //           // ),
+                  //           actions: <Widget>[
+                  //             TextButton(
+                  //               onPressed: () {
+                  //                 Navigator.of(context)
+                  //                     .pop(); // Close the modal
+                  //               },
+                  //               child: Text('Iya'),
+                  //             ),
+                  //           ],
+                  //         );
+                  //       },
+                  //     );
+                  //   },
+                  // )
                 ],
               ),
             ),
