@@ -512,34 +512,36 @@ class _CreateEventState extends State<CreateEvent> {
                       final location = locationController.text;
                       final address = addressController.text;
                       final description = descriptionController.text;
-                      final date =
-                          DateFormat('yyyy-MM-dd').format(selectedDateTime!);
+                      // DateTime selectedDate =
+                      //     selectedDateTime ?? DateTime(1970, 1, 1);
+                      final date = DateFormat('yyyy-MM-dd')
+                          .format(selectedDateTime ?? DateTime(1970, 1, 1));
                       final category = selectedCategory.toString();
                       print(_selectedImage);
 
-                      if (name.isEmpty ||
-                          location.isEmpty ||
-                          address.isEmpty ||
-                          date.isEmpty ||
-                          category.isEmpty ||
-                          // _selectedImage == XFile ||
-                          description.isEmpty) {
-                        final errorMessage = 'Semua field harus diisi.';
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: Text('Error'),
-                            content: Text(errorMessage),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: Text('OK'),
-                              ),
-                            ],
-                          ),
-                        );
-                        return;
-                      }
+                      // if (name.isEmpty ||
+                      //     location.isEmpty ||
+                      //     address.isEmpty ||
+                      //     date.isEmpty ||
+                      //     category.isEmpty ||
+                      //     // _selectedImage == XFile ||
+                      //     description.isEmpty) {
+                      //   final errorMessage = 'Semua field harus diisi.';
+                      //   showDialog(
+                      //     context: context,
+                      //     builder: (context) => AlertDialog(
+                      //       title: Text('Error'),
+                      //       content: Text(errorMessage),
+                      //       actions: [
+                      //         TextButton(
+                      //           onPressed: () => Navigator.of(context).pop(),
+                      //           child: Text('OK'),
+                      //         ),
+                      //       ],
+                      //     ),
+                      //   );
+                      //   return;
+                      // }
 
                       // Lanjutkan dengan permintaan login ke server
                       _apiEventCreate = await serviceEvent.createEvent(

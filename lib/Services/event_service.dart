@@ -127,44 +127,60 @@ class EventService {
     event.forEach((key, value) {
       request.fields[key] = value;
     });
-    request.files.add(await http.MultipartFile.fromPath(
-      'image',
-      imageFile.path,
-      contentType:
-          MediaType('image', 'jpeg'), // Adjust the content type as needed
-    ));
-
-    try {
-      final response = await request.send();
-      var responseBody = await response.stream.toBytes();
-      // return APIResponse<EventModel>(
-      //     data: EventModel(), errorMessage: '${access_token}');
-      if (response.statusCode == 200) {
-        // print('Image uploaded successfully');
+    if (imageFile != null) {
+      request.files.add(await http.MultipartFile.fromPath(
+        'image',
+        imageFile.path,
+        contentType:
+            MediaType('image', 'jpeg'), // Adjust the content type as needed
+      ));
+      try {
+        final response = await request.send();
+        var responseBody = await response.stream.toBytes();
+        // return APIResponse<EventModel>(
+        //     data: EventModel(), errorMessage: '${access_token}');
         final jsonData = jsonDecode(String.fromCharCodes(responseBody));
-        final create_meeting_info = EventModel(
-          id: jsonData['data']['id'],
-          name: jsonData['data']['name'],
-          description: jsonData['data']['description'],
-          imgUrl: baseurl + jsonData['data']["image"],
-          place: jsonData['data']['place'],
-          address: jsonData['data']['address'],
-          date: DateFormat('EEEE, MMMM d y')
-              .format(DateTime.parse(jsonData['data']['date'])),
-        );
-        return APIResponse<EventModel>(
-            data: create_meeting_info,
-            errorMessage:
-                'token : ${access_token}, response code : ${response.statusCode}');
-      } else {
-        // print('Failed to upload image. Status code: ${response.statusCode}');
+        if (response.statusCode == 200) {
+          // print('Image uploaded successfully');
+          final create_meeting_info = EventModel(
+            id: jsonData['data']['id'],
+            name: jsonData['data']['name'],
+            description: jsonData['data']['description'],
+            imgUrl: baseurl + jsonData['data']["image"],
+            place: jsonData['data']['place'],
+            address: jsonData['data']['address'],
+            date: DateFormat('EEEE, MMMM d y')
+                .format(DateTime.parse(jsonData['data']['date'])),
+          );
+          return APIResponse<EventModel>(
+              data: create_meeting_info,
+              errorMessage:
+                  'token : ${access_token}, response code : ${response.statusCode}');
+        } else {
+          // print('Failed to upload image. Status code: ${response.statusCode}');
+          if (jsonData['message'].length > 1) {
+            return APIResponse<EventModel>(
+                data: EventModel(),
+                error: true,
+                errorMessage: 'Semua inputan harus diisi');
+          }
+          return APIResponse<EventModel>(
+              data: EventModel(),
+              error: true,
+              errorMessage: '${jsonData["message"]}');
+        }
+      } catch (e) {
         return APIResponse<EventModel>(
             data: EventModel(), error: true, errorMessage: 'An error occured');
       }
-    } catch (e) {
+    } else {
+      // print('Failed to upload image. Status code: ${response.statusCode}');
       return APIResponse<EventModel>(
-          data: EventModel(), error: true, errorMessage: 'An error occured');
+          data: EventModel(),
+          error: true,
+          errorMessage: 'Semua inputan harus diisi');
     }
+
     // return http.MultipartRequest('POST',Uri.parse('${API}/meet/create'))
     // // return http
     // //     .post(Uri.parse('${API}/meet/create'), headers: headers, body: user)
