@@ -28,7 +28,7 @@ class _RegisterScreenState extends State<RegisterScreen>{
       _registrationSuccess = false;
     });
 
-    var url = "https://activity-connect.projectdira.my.id/public/api/auth/register";
+    var url = "https://activity-connect.naradika.my.id/public/api/auth/register";
     var data = {
       "name": nameController.text,
       "email": emailController.text,

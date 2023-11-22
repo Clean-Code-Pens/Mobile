@@ -7,8 +7,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class CategoryService {
-  static const baseurl = 'https://activity-connect.projectdira.my.id/public';
-  static const API = 'https://activity-connect.projectdira.my.id/public/api';
+  static const baseurl = 'https://activity-connect.naradika.my.id/public';
+  static const API = 'https://activity-connect.naradika.my.id/public/api';
   static const headers = {};
 
   Future<APIResponse<List<CategoryModel>>> getCategoryList() {

@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EventService {
-  static const baseurl = 'https://activity-connect.projectdira.my.id/public';
-  static const API = 'https://activity-connect.projectdira.my.id/public/api';
+  static const baseurl = 'https://activity-connect.naradika.my.id/public';
+  static const API = 'https://activity-connect.naradika.my.id/public/api';
   static const headers = {
     'Authorization':
         'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjdGl2aXR5LWNvbm5lY3QucHJvamVjdGRpcmEubXkuaWQvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NDI3MzUwLCJleHAiOjE2OTg0MzA5NTAsIm5iZiI6MTY5ODQyNzM1MCwianRpIjoiOUN2THZTb28xZk9BeDFJTSIsInN1YiI6IjUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.1W5jYKoi4C7Gnk-zOeEMMQEO_vhBiSkZpx9aPKlOYis',

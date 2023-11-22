@@ -10,8 +10,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class MeetingService {
-  static const baseurl = 'https://activity-connect.projectdira.my.id/public';
-  static const API = 'https://activity-connect.projectdira.my.id/public/api';
+  static const baseurl = 'https://activity-connect.naradika.my.id/public';
+  static const API = 'https://activity-connect.naradika.my.id/public/api';
   // static const headers = {
   //   'Authorization':
   //       'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjdGl2aXR5LWNvbm5lY3QucHJvamVjdGRpcmEubXkuaWQvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NDA2NDk0LCJleHAiOjE2OTg0MTAwOTQsIm5iZiI6MTY5ODQwNjQ5NCwianRpIjoiWFJhSWRoYUhQc2JPT2VkdyIsInN1YiI6IjMiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.MBwKnNOD42L56ftw6rYVWqtUr8XQ1HdWJmaIxhmt0JU',

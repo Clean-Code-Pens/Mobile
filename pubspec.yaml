@@ -59,7 +59,7 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 flutter_native_splash:
   color: "#3188FA"
-  image: assets/splash.png
+  image: assets/icon.png
   android: true
   ios: true
 # The following section is specific to Flutter packages.
@@ -67,7 +67,9 @@ flutter:
   assets:
     - assets/google.png
     - assets/masjid-nabawi-1.jpg
-    - assets/splash.png
+    - assets/icon.png
+    - assets/hero.png
+    - assets/carousel.png
 
   uses-material-design: true
 

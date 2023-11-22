@@ -7,6 +7,7 @@ import 'package:clean_code/Models/login_model.dart';
 import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
+import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Services/auth_service.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/event_service.dart';
@@ -83,17 +84,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _isLoading = false;
     });
   }
-
-  Future<void> removeAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('access_token');
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(),
-        ));
-  }
-
   int itemCountCarousel(length) {
     if (length >= 3) {
       return length + 1;
@@ -259,7 +249,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(10),
                   color: Colors.white,
                   image: DecorationImage(
-                    image: AssetImage('assets/masjid-nabawi-1.jpg'),
+                    image: AssetImage('assets/carousel.png'),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -314,49 +304,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           // SizedBox(width: 5), // Spasi antara gambar dan tombol logout
 
           IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Center(
-                      child: Text('Logout Confirm'),
-                    ),
-                    content: Text('Apakah anda yakin akan keluar?'),
-                    // content: Container(
-                    //   child: Column(
-                    //     children: [
-
-                    //     ],
-                    //   ),
-                    // ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          removeAccessToken(); // Close the modal
-                        },
-                        child: Text('Logout'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the modal
-                        },
-                        child: Text('Batal'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+            onPressed: () {},
             icon: Icon(
-              Icons.person,
+              Icons.notifications,
               color: Color(0xFF3188FA),
             ),
-            // icon: CircleAvatar(
-            //   radius: 55.0,
-            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
-            //   // backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
-            // ),
           )
         ],
         backgroundColor: Colors.white,
@@ -390,7 +342,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             decoration: BoxDecoration(
                                 image: DecorationImage(
                                   image:
-                                      AssetImage("assets/masjid-nabawi-1.jpg"),
+                                      AssetImage("assets/hero.png"),
                                   fit: BoxFit.cover,
                                 ),
                                 // borderRadius: BorderRadius.only(
@@ -491,48 +443,60 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        mini: true,
-        backgroundColor: Color(0xFF3188FA),
-        onPressed: () {
+        child: Icon(Icons.add),
+        onPressed: (){
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => CreateEvent()));
         },
-        child: Icon(Icons.add),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        color: Theme.of(context).colorScheme.primary,
+        child: IconTheme(
+          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  tooltip: 'Home',
+                  icon: const Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'My Events',
+                  icon: const Icon(Icons.event_available),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+                  },
+                ),
+                const SizedBox(width: 24),
+                IconButton(
+                  tooltip: 'My Meetings',
+                  icon: const Icon(Icons.supervised_user_circle_sharp),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Profile',
+                  icon: const Icon(Icons.person_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                  },
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'My Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3188FA),
-        unselectedItemColor: Colors.black,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (_selectedIndex == 0) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ));
-          }
-        },
+        ),
       ),
     );
   }

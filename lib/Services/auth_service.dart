@@ -12,8 +12,8 @@ import 'package:intl/intl.dart';
 import 'package:clean_code/Provider/Database/db_provider.dart';
 
 class AuthService {
-  static const baseurl = 'https://activity-connect.projectdira.my.id/public';
-  static const API = 'https://activity-connect.projectdira.my.id/public/api';
+  static const baseurl = 'https://activity-connect.naradika.my.id/public';
+  static const API = 'https://activity-connect.naradika.my.id/public/api';
   static const headers = {};
 
   Future<APIResponse<LoginModel>> login(email, password) {

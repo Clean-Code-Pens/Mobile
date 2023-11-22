@@ -1,8 +1,6 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/meeting_model.dart';
-import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
-import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Services/meeting_service.dart';
 import 'package:flutter/material.dart';
@@ -10,15 +8,15 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class CreateMeeting extends StatefulWidget {
+class EditScreen extends StatefulWidget {
   int idEvent;
 
-  CreateMeeting({required this.idEvent});
+  EditScreen({required this.idEvent});
   @override
-  _CreateMeetingState createState() => _CreateMeetingState();
+  _EditScreenState createState() => _EditScreenState();
 }
 
-class _CreateMeetingState extends State<CreateMeeting>
+class _EditScreenState extends State<EditScreen>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
 
@@ -29,15 +27,7 @@ class _CreateMeetingState extends State<CreateMeeting>
   TextEditingController peopleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
 
-  Future<void> removeAccessToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('access_token');
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => LoginScreen(),
-        ));
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +35,7 @@ class _CreateMeetingState extends State<CreateMeeting>
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'ActivityConnect',
+          'Edit Profile',
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
         actions: <Widget>[
@@ -81,7 +71,7 @@ class _CreateMeetingState extends State<CreateMeeting>
               Align(
                 alignment: Alignment.center,
                 child: Text(
-                  'Create a New Meeting',
+                  'Edit Profile',
                   style: TextStyle(fontWeight: FontWeight.w700, fontSize: 18),
                 ),
               ),
@@ -92,7 +82,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Title'),
+                    child: Text('Name'),
                   ),
                   SizedBox(
                     height: 10,
@@ -117,7 +107,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.all(10),
-                          hintText: "Enter Title",
+                          hintText: "Enter Name",
                           hintStyle: TextStyle(color: Color(0xff7A7A7A))),
                     ),
                   ),
@@ -130,7 +120,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('People'),
+                    child: Text('Email'),
                   ),
                   SizedBox(
                     height: 10,
@@ -155,7 +145,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                       decoration: InputDecoration(
                           border: InputBorder.none,
                           contentPadding: EdgeInsets.all(10),
-                          hintText: "Enter People",
+                          hintText: "Enter Email",
                           hintStyle: TextStyle(color: Color(0xff7A7A7A))),
                     ),
                   ),
@@ -168,7 +158,7 @@ class _CreateMeetingState extends State<CreateMeeting>
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Description'),
+                    child: Text('Phone Number'),
                   ),
                   SizedBox(
                     height: 10,
@@ -187,131 +177,155 @@ class _CreateMeetingState extends State<CreateMeeting>
                       ],
                     ),
                     child: TextField(
-                      controller: descriptionController,
-                      textAlign: TextAlign.left,
-                      keyboardType: TextInputType.text,
+                      controller: peopleController,
+                      keyboardType: TextInputType.number,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
-                        border: InputBorder.none,
-                        contentPadding: EdgeInsets.all(10),
-                        hintText: "Enter Description",
-                        hintStyle: TextStyle(color: Color(0xff7A7A7A)),
-                      ),
-                      minLines: 3,
-                      maxLines: 4,
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(10),
+                          hintText: "Enter Phone Number",
+                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
                     ),
                   ),
                   SizedBox(
                     height: 15,
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Address'),
+                  ),
+                  SizedBox(
+                    height: 10,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final title = titleController.text;
-                        final people = peopleController.text;
-                        final description = descriptionController.text;
-                        print(people);
-
-                        if (title.isEmpty ||
-                            people.isEmpty ||
-                            description.isEmpty) {
-                          final errorMessage =
-                              'Email dan password harus diisi.';
-                          showDialog(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              title: Text('Error'),
-                              content: Text(errorMessage),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: Text('OK'),
-                                ),
-                              ],
-                            ),
-                          );
-                          return;
-                        }
-
-                        // Lanjutkan dengan permintaan login ke server
-                        _apiMeetingCreate = await serviceMeeting.createMeeting(
-                            widget.idEvent.toString(),
-                            title,
-                            description,
-                            people);
-                        if (_apiMeetingCreate != null) {
-                          print(_apiMeetingCreate?.errorMessage);
-                          if (_apiMeetingCreate?.error == true) {
-                            showDialog(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                title: Text('Error'),
-                                content: Text(
-                                    _apiMeetingCreate?.errorMessage ?? 'Error'),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () =>
-                                        Navigator.of(context).pop(),
-                                    child: Text('OK'),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            // final prefs = await SharedPreferences.getInstance();
-                            // prefs.setString(
-                            //     'access_token',
-                            //     _apiMeetingCreate?.data?.access_token ??
-                            //         'access_token');
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailEvent(idEvent: widget.idEvent),
-                                ));
-                          }
-                        }
-                        // ...
-                      },
-                      style: ButtonStyle(
-                        elevation: MaterialStateProperty.all(5),
-                        shape: MaterialStateProperty.all(RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        )),
-                        backgroundColor:
-                            MaterialStateProperty.all(Colors.blueAccent),
-                      ),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: peopleController,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(10),
+                          hintText: "Enter Address",
+                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Gender'),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: peopleController,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(10),
+                          hintText: "Enter Gender",
+                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  )
+                ],
+              ),
+              Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text('Job'),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 2,
+                          blurRadius: 3,
+                          offset: Offset(0, 3), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    child: TextField(
+                      controller: peopleController,
+                      keyboardType: TextInputType.number,
+                      style: TextStyle(color: Colors.black),
+                      decoration: InputDecoration(
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(10),
+                          hintText: "Enter Job",
+                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  )
+                ],
+              ),
+              InkWell(
+                child: Container(
+                  margin: EdgeInsets.symmetric(horizontal: 2.0),
+                  width: double.maxFinite,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Color(0xFF3188FA),
+                  ),
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: Padding(
+                      padding: EdgeInsets.only(top: 15, bottom: 15),
                       child: Text(
-                        "New Meeting",
-                        style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.height / 50),
+                        'Save',
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
                   ),
-                  // InkWell(
-                  //   child: Container(
-                  //     margin: EdgeInsets.symmetric(horizontal: 2.0),
-                  //     width: double.maxFinite,
-                  //     decoration: BoxDecoration(
-                  //       borderRadius: BorderRadius.circular(10),
-                  //       color: Color(0xFF3188FA),
-                  //     ),
-                  //     child: Align(
-                  //       alignment: Alignment.center,
-                  //       child: Padding(
-                  //         padding: EdgeInsets.only(top: 15, bottom: 15),
-                  //         child: Text(
-                  //           'New Meeting',
-                  //           style: TextStyle(color: Colors.white),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  //   onTap: () => print("seemore"),
-                  // ),
-                ],
+                ),
+                onTap: () => print("seemore"),
               ),
             ],
           ),
