@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clean_code/Constants/app_url.dart';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
@@ -10,8 +11,8 @@ import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EventService {
-  static const baseurl = 'https://activity-connect.projectdira.my.id/public';
-  static const API = 'https://activity-connect.projectdira.my.id/public/api';
+  static String baseurl = AppUrl.baseurl;
+  static String API = AppUrl.apiurl;
   static const headers = {
     'Authorization':
         'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjdGl2aXR5LWNvbm5lY3QucHJvamVjdGRpcmEubXkuaWQvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NDI3MzUwLCJleHAiOjE2OTg0MzA5NTAsIm5iZiI6MTY5ODQyNzM1MCwianRpIjoiOUN2THZTb28xZk9BeDFJTSIsInN1YiI6IjUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.1W5jYKoi4C7Gnk-zOeEMMQEO_vhBiSkZpx9aPKlOYis',
@@ -28,19 +29,19 @@ class EventService {
       if (data.statusCode == 200) {
         final jsonData = jsonDecode(data.body);
         final events = <EventModel>[];
-        jsonData["data"].forEach((k, item) {
+        for (var i = 0; i < jsonData["data"].length; i++) {
           final event = EventModel(
-            id: item['id'],
-            name: item['name'],
-            description: item['description'],
-            imgUrl: baseurl + item['image'],
-            place: item['place'],
-            address: item['address'],
+            id: jsonData["data"][i]['id'],
+            name: jsonData["data"][i]['name'],
+            description: jsonData["data"][i]['description'],
+            imgUrl: baseurl + jsonData["data"][i]['image'],
+            place: jsonData["data"][i]['place'],
+            address: jsonData["data"][i]['address'],
             date: DateFormat('EEEE, MMMM d y')
-                .format(DateTime.parse(item['date'])),
+                .format(DateTime.parse(jsonData["data"][i]['date'])),
           );
           events.add(event);
-        });
+        }
         return APIResponse<List<EventModel>>(data: events, errorMessage: '');
       }
       return APIResponse<List<EventModel>>(
@@ -128,11 +129,22 @@ class EventService {
       request.fields[key] = value;
     });
     if (imageFile != null) {
+      MediaType? mediaType;
+      if (imageFile.path.toLowerCase().endsWith('.jpg') ||
+          imageFile.path.toLowerCase().endsWith('.jpeg')) {
+        mediaType = MediaType('image', 'jpeg');
+      } else if (imageFile.path.toLowerCase().endsWith('.png')) {
+        mediaType = MediaType('image', 'png');
+      } else {
+        return APIResponse<EventModel>(
+            data: EventModel(),
+            error: true,
+            errorMessage: 'Format file/gambar tidak didukung');
+      }
       request.files.add(await http.MultipartFile.fromPath(
         'image',
         imageFile.path,
-        contentType:
-            MediaType('image', 'jpeg'), // Adjust the content type as needed
+        contentType: mediaType, // Adjust the content type as needed
       ));
       try {
         final response = await request.send();
@@ -291,5 +303,83 @@ class EventService {
             date: ''),
         error: true,
         errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<List<EventModel>>> searchEvent(keyword) async {
+    // String? access_token = await getAccessToken();
+    // final headers = {
+    //   'Authorization': 'Bearer ${access_token}',
+    // };
+    final body = {
+      'query': keyword,
+    };
+    return http.post(Uri.parse('${API}/meet/create'), body: body).then((data) {
+      //   return APIResponse<EventModel>(
+      //   // data: EventModel(), errorMessage: jsonDecode(data.body).toString());
+      // });
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        final events = <EventModel>[];
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          final event = EventModel(
+            id: jsonData["data"][i]['id'],
+            name: jsonData["data"][i]['name'],
+            description: jsonData["data"][i]['description'],
+            imgUrl: baseurl + jsonData["data"][i]['image'],
+            place: jsonData["data"][i]['place'],
+            address: jsonData["data"][i]['address'],
+            date: DateFormat('EEEE, MMMM d y')
+                .format(DateTime.parse(jsonData["data"][i]['date'])),
+          );
+          events.add(event);
+        }
+        // return APIResponse<List<EventModel>>(data: events, errorMessage: '');
+        return APIResponse<List<EventModel>>(
+            data: events, errorMessage: jsonDecode(data.body).toString());
+      }
+      return APIResponse<List<EventModel>>(
+          data: [], error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<List<EventModel>>(
+        data: [], error: true, errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<List<EventModel>>> getMyEventList() async {
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    // final body = {
+    //   'query': keyword,
+    // };
+    return http
+        .post(Uri.parse('${API}/event/my'), headers: headers)
+        .then((data) {
+      //   return APIResponse<EventModel>(
+      //   // data: EventModel(), errorMessage: jsonDecode(data.body).toString());
+      // });
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        final events = <EventModel>[];
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          final event = EventModel(
+            id: jsonData["data"][i]['id'],
+            name: jsonData["data"][i]['name'],
+            description: jsonData["data"][i]['description'],
+            imgUrl: baseurl + jsonData["data"][i]['image'],
+            place: jsonData["data"][i]['place'],
+            address: jsonData["data"][i]['address'],
+            date: DateFormat('EEEE, MMMM d y')
+                .format(DateTime.parse(jsonData["data"][i]['date'])),
+          );
+          events.add(event);
+        }
+        // return APIResponse<List<EventModel>>(data: events, errorMessage: '');
+        return APIResponse<List<EventModel>>(
+            data: events, errorMessage: jsonDecode(data.body).toString());
+      }
+      return APIResponse<List<EventModel>>(
+          data: [], error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<List<EventModel>>(
+            data: [], error: true, errorMessage: 'An error occured'));
   }
 }

@@ -5,6 +5,8 @@ import 'package:clean_code/Models/category_model.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/login_model.dart';
 import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Screen/AllEventScreen.dart';
+import 'package:clean_code/Screen/AllMeetingScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Services/auth_service.dart';
@@ -25,6 +27,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
+  int limitList = 2;
 
   // nyeluk service e di dadekno variabel
   AuthService get serviceLogin => GetIt.I<AuthService>();
@@ -33,11 +36,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   CategoryService get serviceCategory => GetIt.I<CategoryService>();
 
   // deklarasi variabel dinggo nyimpen return api
-  APIResponse<LoginModel>? _apiLogin;
+  // APIResponse<LoginModel>? _apiLogin;
   APIResponse<List<CategoryModel>>? _apiCategory;
-  APIResponse<List<EventModel>>? _apiEventList;
   APIResponse<List<MeetingModel>>? _apiMeetingList;
-  List<APIResponse<List<EventModel>>>? _apiEventCategoryList = [];
 
   bool _isLoading = false;
 
@@ -52,33 +53,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _isLoading = true;
     });
 
-    // Login Consume =============================
-    // Nde main.dart enek ndaftarne service
-    // terus mari didaftarne nde halaman nyeluk service e di dadekno variabel
-    // terus deklarasi variabel dinggo nyimpen return api
-    // mari ngunu diceluk nde kene njalanke api
-    // hasil e wes sesuai variabel sing dingge nyimpen data.
-    // file file sing digunakno Service/auth_service.dart, Models/login_model.dart
-
-    // _apiLogin = await serviceLogin.login();
-
-    // // print(_apiLogin?.data?.access_token);
-    //============================================
-
     _apiCategory = await serviceCategory.getCategoryList();
 
-    // List eventCategory = [];
-    for (var i = 0; i < _apiCategory!.data.length; i++) {
-      APIResponse<List<EventModel>> responseEventCategory = await serviceEvent
-          .getEventCategoryListLimit(_apiCategory?.data?[i].id, 3);
-      _apiEventCategoryList?.add(responseEventCategory);
-    }
+    _apiMeetingList = await serviceMeeting.getMeetingListLimit(limitList);
 
-    // print(_apiCategory?.data?.length);
-    // print(_apiEventCategoryList?.length);
-
-    // _apiEventList = await serviceEvent.getEventListLimit(3);
-    _apiMeetingList = await serviceMeeting.getMeetingListLimit(3);
     setState(() {
       _isLoading = false;
     });
@@ -95,14 +73,14 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   int itemCountCarousel(length) {
-    if (length >= 3) {
+    if (length >= limitList) {
       return length + 1;
     }
     return length;
   }
 
   @override
-  List<Widget> category() {
+  List<Widget> tab() {
     List<Widget> tabs = [];
     // int categoryLength = _apiCategory != null ? _apiCategory.data.length : 0;
     int categoryLength = _apiCategory?.data?.length ?? 0;
@@ -118,100 +96,229 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   }
 
   @override
-  List<Widget> eventCategoryList() {
-    List<Widget> eventsCategory = [];
+  List<Widget> tabChild() {
+    List<Widget> childs = [];
+    // int categoryLength = _apiCategory != null ? _apiCategory.data.length : 0;
     int categoryLength = _apiCategory?.data?.length ?? 0;
-    // print(categoryLength);
+    // print(_apiCategory?.data.length);
     for (var i = 0; i < categoryLength; i++) {
-      int eventCategoryLength = _apiEventCategoryList?[i].data?.length ?? 0;
-      final eventCategory = Container(
-        width: double.maxFinite,
-        height: 100,
-        child: ListView.builder(
-            itemCount: itemCountCarousel(eventCategoryLength),
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (_, index) {
-              if (index == 3) {
-                return InkWell(
-                  child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 2.0),
-                    width: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.arrow_circle_right_outlined,
-                          size: 25,
-                          color: Color(0xFF3188FA),
+      // final tab = Widget(key: ,)
+      // final apiEventList = await serviceEvent.getEventCategoryListLimit(
+      //     _apiCategory?.data[i]?.id ?? 0, 3);
+      // ;
+      // print("==============");
+      // print(apiEventList);
+      final tab = eventCategoryList(_apiCategory?.data[i]?.id ?? 0);
+      childs.add(tab);
+      // final tab = eventCategoryList(apiEventList);
+    }
+    return childs;
+  }
+
+  @override
+  Widget eventCategoryList(idCategory) {
+    return Scaffold(
+      body: FutureBuilder<APIResponse<List<EventModel>>>(
+        future: serviceEvent.getEventCategoryListLimit(idCategory, limitList),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            // While waiting for data, display a loading indicator
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          } else if (snapshot.hasError) {
+            // If there's an error, display an error message
+            return Text('Error: ${snapshot.error}');
+          } else if (!snapshot.hasData || snapshot.data?.data == null) {
+            // If there's no data, display a message
+            return Text('No data available');
+          } else {
+            // Data is available, build your UI using the snapshot.data
+            List<EventModel> eventList = snapshot.data!.data!;
+            int eventCategoryLength = eventList.length;
+
+            final eventCategory = Container(
+              width: double.maxFinite,
+              height: 100,
+              child: ListView.builder(
+                  itemCount: itemCountCarousel(eventCategoryLength),
+                  scrollDirection: Axis.horizontal,
+                  itemBuilder: (_, index) {
+                    if (index == limitList) {
+                      return InkWell(
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: 2.0),
+                          width: 100,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: Colors.white,
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.arrow_circle_right_outlined,
+                                size: 25,
+                                color: Color(0xFF3188FA),
+                              ),
+                              Text(
+                                'See More',
+                                style: TextStyle(color: Color(0xFF3188FA)),
+                              )
+                            ],
+                          ),
                         ),
-                        Text(
-                          'See More',
-                          style: TextStyle(color: Color(0xFF3188FA)),
-                        )
-                      ],
-                    ),
-                  ),
-                  onTap: () => print("seemore"),
-                );
-              }
-              return InkWell(
-                child: Container(
-                  margin: EdgeInsets.symmetric(horizontal: 2.0),
-                  width: 100,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.white,
-                    image: DecorationImage(
-                      image: NetworkImage(
-                          _apiEventCategoryList?[i].data[index]?.imgUrl ??
-                              'Not Found'),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(5.0),
-                    child: Align(
-                      alignment: Alignment.bottomLeft,
-                      child: Text(
-                        _apiEventCategoryList?[i].data[index]?.name ??
-                            'Not Found',
-                        // child: Text(
-                        //   _apiEventList
-                        //           ?.data[index]?.name ??
-                        //       'Not Found',
-                        style: TextStyle(
-                          fontSize: 12.0,
-                          // fontFamily: "Explora",
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AllEvent(),
+                              ));
+                        },
+                      );
+                    }
+                    return InkWell(
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 2.0),
+                        width: 100,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
-                          // fontWeight: FontWeight.w900),
+                          image: DecorationImage(
+                            image: NetworkImage(
+                                eventList[index].imgUrl ?? 'Not Found'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.all(5.0),
+                          child: Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Text(
+                              eventList[index].name ?? 'Not Found',
+                              style: TextStyle(
+                                fontSize: 12.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => DetailEvent(
-                          idEvent:
-                              _apiEventCategoryList?[i].data[index]?.id ?? 0,
-                        ),
-                      ));
-                },
-              );
-            }),
-      );
-      eventsCategory.add(eventCategory);
-    }
-    print(eventsCategory);
-    return eventsCategory;
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailEvent(
+                                idEvent: eventList[index].id ?? 0,
+                              ),
+                            ));
+                      },
+                    );
+                  }),
+            );
+            return eventCategory;
+          }
+        },
+      ),
+    );
   }
+
+  // @override
+  // List<Widget> eventCategoryList() {
+  //   List<Widget> eventsCategory = [];
+  //   int categoryLength = _apiCategory?.data?.length ?? 0;
+  //   // print(categoryLength);
+  //   for (var i = 0; i < categoryLength; i++) {
+  //     int eventCategoryLength = _apiEventCategoryList?[i].data?.length ?? 0;
+  //     final eventCategory = Container(
+  //       width: double.maxFinite,
+  //       height: 100,
+  //       child: ListView.builder(
+  //           itemCount: itemCountCarousel(eventCategoryLength),
+  //           scrollDirection: Axis.horizontal,
+  //           itemBuilder: (_, index) {
+  //             if (index == 3) {
+  //               return InkWell(
+  //                 child: Container(
+  //                   margin: EdgeInsets.symmetric(horizontal: 2.0),
+  //                   width: 100,
+  //                   decoration: BoxDecoration(
+  //                     borderRadius: BorderRadius.circular(10),
+  //                     color: Colors.white,
+  //                   ),
+  //                   child: Column(
+  //                     mainAxisAlignment: MainAxisAlignment.center,
+  //                     crossAxisAlignment: CrossAxisAlignment.center,
+  //                     children: [
+  //                       Icon(
+  //                         Icons.arrow_circle_right_outlined,
+  //                         size: 25,
+  //                         color: Color(0xFF3188FA),
+  //                       ),
+  //                       Text(
+  //                         'See More',
+  //                         style: TextStyle(color: Color(0xFF3188FA)),
+  //                       )
+  //                     ],
+  //                   ),
+  //                 ),
+  //                 onTap: () => print("seemore"),
+  //               );
+  //             }
+  //             return InkWell(
+  //               child: Container(
+  //                 margin: EdgeInsets.symmetric(horizontal: 2.0),
+  //                 width: 100,
+  //                 decoration: BoxDecoration(
+  //                   borderRadius: BorderRadius.circular(10),
+  //                   color: Colors.white,
+  //                   image: DecorationImage(
+  //                     image: NetworkImage(
+  //                         _apiEventCategoryList?[i].data[index]?.imgUrl ??
+  //                             'Not Found'),
+  //                     fit: BoxFit.cover,
+  //                   ),
+  //                 ),
+  //                 child: Padding(
+  //                   padding: EdgeInsets.all(5.0),
+  //                   child: Align(
+  //                     alignment: Alignment.bottomLeft,
+  //                     child: Text(
+  //                       _apiEventCategoryList?[i].data[index]?.name ??
+  //                           'Not Found',
+  //                       // child: Text(
+  //                       //   _apiEventList
+  //                       //           ?.data[index]?.name ??
+  //                       //       'Not Found',
+  //                       style: TextStyle(
+  //                         fontSize: 12.0,
+  //                         // fontFamily: "Explora",
+  //                         color: Colors.white,
+  //                         // fontWeight: FontWeight.w900),
+  //                       ),
+  //                     ),
+  //                   ),
+  //                 ),
+  //               ),
+  //               onTap: () {
+  //                 Navigator.push(
+  //                     context,
+  //                     MaterialPageRoute(
+  //                       builder: (context) => DetailEvent(
+  //                         idEvent:
+  //                             _apiEventCategoryList?[i].data[index]?.id ?? 0,
+  //                       ),
+  //                     ));
+  //               },
+  //             );
+  //           }),
+  //     );
+  //     eventsCategory.add(eventCategory);
+  //   }
+  //   print(eventsCategory);
+  //   return eventsCategory;
+  // }
 
   @override
   Widget meetings() {
@@ -223,7 +330,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           itemCount: itemCountCarousel(meetingLength),
           scrollDirection: Axis.horizontal,
           itemBuilder: (_, index) {
-            if (index == 3) {
+            if (index == limitList) {
               return InkWell(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 2.0),
@@ -248,7 +355,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                     ],
                   ),
                 ),
-                onTap: () => print("seemore"),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AllMeeting(),
+                      ));
+                },
               );
             }
             return InkWell(
@@ -435,7 +548,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                           controller: _tabController,
                           labelColor: Colors.black,
                           unselectedLabelColor: Colors.grey,
-                          tabs: category(),
+                          tabs: tab(),
                           // [
                           //   Tab(
                           //     text: 'sdawd',
@@ -457,7 +570,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                         height: 100,
                         child: TabBarView(
                           controller: _tabController,
-                          children: eventCategoryList(),
+                          children: tabChild(),
                         ),
                       ),
                     ],

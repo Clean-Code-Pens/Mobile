@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clean_code/Constants/app_url.dart';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/category_model.dart';
@@ -12,8 +13,8 @@ import 'package:intl/intl.dart';
 import 'package:clean_code/Provider/Database/db_provider.dart';
 
 class AuthService {
-  static const baseurl = 'https://activity-connect.projectdira.my.id/public';
-  static const API = 'https://activity-connect.projectdira.my.id/public/api';
+  static String baseurl = AppUrl.baseurl;
+  static String API = AppUrl.apiurl;
   static const headers = {};
 
   Future<APIResponse<LoginModel>> login(email, password) {

@@ -386,7 +386,7 @@ class _DetailEventState extends State<DetailEvent>
                     height: 200,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(10),
-                      color: Colors.amber,
+                      color: Colors.blueGrey,
                       image: DecorationImage(
                         image: NetworkImage(
                             _apiDetailEvent?.data?.imgUrl ?? 'Not Found'),
