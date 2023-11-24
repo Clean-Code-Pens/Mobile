@@ -73,8 +73,17 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
   @override
   List<Widget> listEvent() {
     List<Widget> events = [];
+
     // int categoryLength = _apiDetailEvent != null ? _apiDetailEvent.data.length : 0;
     int eventLength = _apiEvent?.data?.length ?? 0;
+    if (eventLength <= 0) {
+      events.add(Container(
+        margin: EdgeInsets.all(15),
+        child: Center(
+          child: Text('Belum ada event yang dibuat'),
+        ),
+      ));
+    }
     // print(_apiDetailEvent?.data.length);
     for (var i = 0; i < eventLength; i++) {
       // Container(
