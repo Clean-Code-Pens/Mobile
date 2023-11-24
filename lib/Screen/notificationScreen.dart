@@ -5,6 +5,7 @@ import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/DetailMeetingScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Screen/NotificationScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Services/event_service.dart';
@@ -20,15 +21,27 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NotificationScreen extends StatefulWidget {
   // int idEvent;
 
-  // Notification({required this.idEvent});
+  // NotificationScreen({required this.idEvent});
 
   @override
-  _NotificationState createState() => _NotificationState();
-  // _NotificationState createState() => _NotificationState(this.idEvent);
+  _NotificationScreenState createState() => _NotificationScreenState();
+  // _NotificationScreenState createState() => _NotificationScreenState(this.idEvent);
 }
 
-class _NotificationState extends State<NotificationScreen>
+class _NotificationScreenState extends State<NotificationScreen>
     with TickerProviderStateMixin {
+// class NotificationScreen extends StatefulWidget {
+//   // int idEvent;
+
+//   // Notification({required this.idEvent});
+
+//   @override
+//   _NotificationState createState() => _NotificationState();
+//   // _NotificationState createState() => _NotificationState(this.idEvent);
+// }
+
+// class _NotificationState extends State<NotificationScreen>
+//     with TickerProviderStateMixin {
   // int? idEvent;
 
   // _DetailEventState(id) {
@@ -40,6 +53,8 @@ class _NotificationState extends State<NotificationScreen>
   ProfileService get serviceProfile => GetIt.I<ProfileService>();
   APIResponse<List<NotifModel>>? _apiNotif;
 
+  bool _isLoading = false;
+
   @override
   void initState() {
     _fetchAPI();
@@ -47,12 +62,15 @@ class _NotificationState extends State<NotificationScreen>
   }
 
   _fetchAPI() async {
-    // setState(() {
-    //   _isLoading = true;
-    // });
+    setState(() {
+      _isLoading = true;
+    });
     _apiNotif = await serviceProfile.getNotif();
     print('cek notif');
     print(_apiNotif?.data.length);
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> removeAccessToken() async {
@@ -119,6 +137,11 @@ class _NotificationState extends State<NotificationScreen>
       ),
       body: Builder(
         builder: (_) {
+          if (_isLoading) {
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          }
           return Container(
             margin: EdgeInsets.all(10),
             child:
