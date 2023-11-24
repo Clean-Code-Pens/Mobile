@@ -5,11 +5,15 @@ import 'package:clean_code/Models/category_model.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/user_model.dart';
 import 'package:clean_code/Screen/ChangePasswordScreen.dart';
+import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/EditProfileScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Screen/MyEventScreen.dart';
+import 'package:clean_code/Screen/MyMeetingScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
+import 'package:clean_code/Screen/notificationScreen.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/profile_service.dart';
@@ -68,12 +72,24 @@ class _ProfileState extends State<ProfileScreen> {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          'ActivityConnect',
+          'Profile',
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
         actions: <Widget>[
+          // IconButton(
+          //   onPressed: () => removeAccessToken(),
+          //   icon: Icon(Icons.exit_to_app),
+          //   color: Color(0xFF3188FA),
+          // ),
+          // SizedBox(width: 5), // Spasi antara gambar dan tombol logout
+
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NotificationScreen()));
+            },
             icon: Icon(
               Icons.notifications,
               color: Color(0xFF3188FA),
@@ -82,6 +98,23 @@ class _ProfileState extends State<ProfileScreen> {
         ],
         backgroundColor: Colors.white,
       ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text(
+      //     'ActivityConnect',
+      //     style: TextStyle(color: Color(0xFF3188FA)),
+      //   ),
+      //   actions: <Widget>[
+      //     IconButton(
+      //       onPressed: () {},
+      //       icon: Icon(
+      //         Icons.notifications,
+      //         color: Color(0xFF3188FA),
+      //       ),
+      //     )
+      //   ],
+      //   backgroundColor: Colors.white,
+      // ),
       body: Builder(builder: (_) {
         if (_isLoading) {
           return Center(
@@ -248,6 +281,14 @@ class _ProfileState extends State<ProfileScreen> {
           ),
         );
       }),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreateEvent()));
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: BottomAppBar(
         shape: const CircularNotchedRectangle(),
         color: Theme.of(context).colorScheme.primary,
@@ -270,8 +311,8 @@ class _ProfileState extends State<ProfileScreen> {
                   tooltip: 'My Events',
                   icon: const Icon(Icons.event_available),
                   onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyEvent()));
                   },
                 ),
                 const SizedBox(width: 24),
@@ -279,8 +320,8 @@ class _ProfileState extends State<ProfileScreen> {
                   tooltip: 'My Meetings',
                   icon: const Icon(Icons.supervised_user_circle_sharp),
                   onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyMeeting()));
                   },
                 ),
                 IconButton(
