@@ -36,10 +36,11 @@ class _ProfileState extends State<ProfileScreen> {
   APIResponse<UserModel>? _apiProfile;
 
   bool _isLoading = false;
-  String profile_picture = '';
+  String profile_picture = '/profilePicture/usericon.png';
 
   @override
   void initState() {
+    print(AppUrl.baseurl);
     _fetchAPI();
     super.initState();
   }
@@ -51,7 +52,8 @@ class _ProfileState extends State<ProfileScreen> {
     _apiProfile = await serviceProfile.getDetailProfile();
     setState(() {
       final String path_profile_picture =
-          _apiProfile?.data?.profile?.profile_picture ?? 'notfound';
+          _apiProfile?.data?.profile?.profile_picture ??
+              '/profilePicture/usericon.png';
       profile_picture = AppUrl.baseurl + path_profile_picture;
       _isLoading = false;
     });

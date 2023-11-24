@@ -21,7 +21,7 @@ class EditProfile extends StatefulWidget {
 
 class _EditProfileState extends State<EditProfile>
     with TickerProviderStateMixin {
-  List<String> genderList = ['Male', 'Female'];
+  List<String> genderList = ['', 'Male', 'Female'];
   int _selectedIndex = 0;
   XFile? _selectedImage;
   String? selectedGender;
@@ -46,7 +46,7 @@ class _EditProfileState extends State<EditProfile>
 
   String capitalize(String? input) {
     if (input == null || input.isEmpty) {
-      return input!;
+      return input ?? '';
     }
     return input[0].toUpperCase() + input.substring(1);
   }
@@ -72,7 +72,8 @@ class _EditProfileState extends State<EditProfile>
       final String path_profile_picture =
           _apiProfile?.data?.profile?.profile_picture ?? 'notfound';
       profile_picture = AppUrl.baseurl + path_profile_picture;
-      selectedGender = capitalize(_apiProfile?.data?.profile?.gender);
+      selectedGender = capitalize(_apiProfile?.data?.profile?.gender ?? '');
+      print(selectedGender);
       _isLoading = false;
     });
   }
@@ -91,11 +92,19 @@ class _EditProfileState extends State<EditProfile>
     List<DropdownMenuItem<String>> tabs = [];
     int genderLength = genderList.length ?? 0;
     for (var i = 0; i < genderLength; i++) {
-      final tab = DropdownMenuItem<String>(
-        value: genderList[i],
-        child: Text(genderList[i]),
-      );
-      tabs.add(tab);
+      if (genderList[i] == '') {
+        final tab = DropdownMenuItem<String>(
+          value: '',
+          child: Text('Select Gender'),
+        );
+        tabs.add(tab);
+      } else {
+        final tab = DropdownMenuItem<String>(
+          value: genderList[i],
+          child: Text(genderList[i]),
+        );
+        tabs.add(tab);
+      }
     }
     // print(tabs);
     return tabs;

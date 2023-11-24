@@ -340,7 +340,7 @@ class MeetingService {
         if (jsonData["data"]["profile"] != null) {
           user.profile = ProfileModel(
             id: jsonData["data"]["profile"]['id'],
-            address: jsonData["data"]["profile"]['address'],
+            address: jsonData["data"]["profile"]['addres'],
             profile_picture: jsonData["data"]["profile"]['profile_picture'],
             job: jsonData["data"]["profile"]['job'],
             no_hp: jsonData["data"]["profile"]['noHp'],
@@ -384,8 +384,12 @@ class MeetingService {
           final request = RequestModel(
             id: jsonData["data"][i]['id'],
             user: UserModel(
-                id: jsonData["data"][i]['user']['id'],
-                name: jsonData["data"][i]['user']['name']),
+              id: jsonData["data"][i]['user']['id'],
+              name: jsonData["data"][i]['user']['name'],
+              profile: ProfileModel(
+                  profile_picture: jsonData["data"][i]['user']['profile']
+                      ['profile_picture']),
+            ),
           );
           requests.add(request);
         }
@@ -482,7 +486,13 @@ class MeetingService {
           ownership: ownership,
           name: meets['name'],
           description: meets['description'],
-          user: UserModel(id: meets['user']['id'], name: meets['user']['name']),
+          user: UserModel(
+            id: meets['user']['id'],
+            name: meets['user']['name'],
+            profile: ProfileModel(
+              profile_picture: meets['user']['profile']['profile_picture'],
+            ),
+          ),
           event: EventModel(
               id: meets['event']['id'],
               name: meets['event']['name'],
@@ -494,10 +504,12 @@ class MeetingService {
           people_need: meets['people_need'],
         );
 
-        return APIResponse<MeetingModel>(data: meet, errorMessage: '');
+        return APIResponse<MeetingModel>(data: meet, errorMessage: 'cek');
       }
       return APIResponse<MeetingModel>(
-          data: MeetingModel(), error: true, errorMessage: 'An error occured');
+          data: MeetingModel(),
+          error: true,
+          errorMessage: data.statusCode.toString());
     }).catchError((_) => APIResponse<MeetingModel>(
         data: MeetingModel(), error: true, errorMessage: 'An error occured'));
   }

@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:clean_code/Constants/app_url.dart';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
@@ -34,6 +35,7 @@ class _DetailMeetingState extends State<DetailMeeting>
   // }
 
   int _selectedIndex = 0;
+  // String profile_picture = '';
 
   // EventService get service => GetIt.I<EventService>();
   // APIResponse<EventModel>? _apiDetailMeeting;
@@ -47,6 +49,7 @@ class _DetailMeetingState extends State<DetailMeeting>
 
   @override
   void initState() {
+    // print('ckckck');
     _fetchEvents(widget.idMeeting);
 
     super.initState();
@@ -61,9 +64,15 @@ class _DetailMeetingState extends State<DetailMeeting>
     setState(() {
       _isLoading = true;
     });
+    print('cekcek');
     _apiDetailMeeting = await meetingService.getDetailMeeting(idMeeting);
+    print('cekcek');
+    print(_apiDetailMeeting?.errorMessage);
     _apiRequestMeeting = await meetingService.getRequestMeeting(idMeeting);
     setState(() {
+      // final String path_profile_picture =
+      //     _apiDetailMeeting?.data?.user?.profile?.profile_picture ?? 'notfound';
+      // profile_picture = AppUrl.baseurl + path_profile_picture;
       _isLoading = false;
     });
   }
@@ -87,6 +96,12 @@ class _DetailMeetingState extends State<DetailMeeting>
       // print(_apiRequestMeeting?.data.length);
       for (var i = 0; i < requestLength; i++) {
         int id_meeting = _apiDetailMeeting?.data?.id ?? 0;
+        final path_profile_picture =
+            _apiRequestMeeting?.data?[i].user?.profile?.profile_picture ??
+                '/profilePicture/usericon.png';
+        String profile_picture = AppUrl.baseurl + path_profile_picture;
+        print('cek foto request');
+        print(AppUrl.baseurl);
         final request = Container(
           margin: EdgeInsets.symmetric(vertical: 5),
           decoration: BoxDecoration(
@@ -131,8 +146,7 @@ class _DetailMeetingState extends State<DetailMeeting>
                                 borderRadius: BorderRadius.circular(40),
                                 color: Colors.blueGrey,
                                 image: DecorationImage(
-                                  image:
-                                      AssetImage("assets/masjid-nabawi-1.jpg"),
+                                  image: NetworkImage(profile_picture),
                                   fit: BoxFit.cover,
                                 ),
                               ),
@@ -555,6 +569,12 @@ class _DetailMeetingState extends State<DetailMeeting>
   Widget owner() {
     Widget owner = Container();
     if (_apiDetailMeeting?.data?.ownership != 'mine') {
+      final path_profile_picture =
+          _apiDetailMeeting?.data?.user?.profile?.profile_picture ??
+              '/profilePicture/usericon.png';
+      String profile_picture = AppUrl.baseurl + path_profile_picture;
+      // print('cek foto request');
+      // print(_apiDetailMeeting?.data?.id_event);
       owner = Row(
         children: [
           Align(
@@ -567,7 +587,7 @@ class _DetailMeetingState extends State<DetailMeeting>
                 borderRadius: BorderRadius.circular(40),
                 color: Colors.blueGrey,
                 image: DecorationImage(
-                  image: AssetImage("assets/masjid-nabawi-1.jpg"),
+                  image: NetworkImage(profile_picture),
                   fit: BoxFit.cover,
                 ),
               ),

@@ -1,5 +1,7 @@
 import 'dart:math';
 
+import 'package:clean_code/Constants/app_url.dart';
+import 'package:clean_code/Constants/app_url.dart';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
@@ -36,6 +38,7 @@ class _RequestProfileState extends State<RequestProfile>
   // }
 
   int _selectedIndex = 0;
+  String profile_picture = '/profilePicture/usericon.png';
 
   // EventService get service => GetIt.I<EventService>();
   // APIResponse<EventModel>? _apiDetailMeeting;
@@ -68,6 +71,10 @@ class _RequestProfileState extends State<RequestProfile>
     // print(_apiRequestProfile
     //     ?.errorMessage); // _apiRequestMeeting = await meetingService.getRequestMeeting(idMeeting);
     setState(() {
+      final String path_profile_picture =
+          _apiRequestProfile?.data?.profile?.profile_picture ??
+              '/profilePicture/usericon.png';
+      profile_picture = AppUrl.baseurl + path_profile_picture;
       _isLoading = false;
     });
   }
@@ -187,8 +194,7 @@ class _RequestProfileState extends State<RequestProfile>
                                 borderRadius: BorderRadius.circular(100),
                                 color: Colors.blueGrey,
                                 image: DecorationImage(
-                                  image:
-                                      AssetImage("assets/masjid-nabawi-1.jpg"),
+                                  image: NetworkImage(profile_picture),
                                   fit: BoxFit.cover,
                                 ),
                               ),
