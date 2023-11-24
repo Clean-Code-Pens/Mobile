@@ -13,6 +13,7 @@ import 'package:clean_code/Screen/MyEventScreen.dart';
 import 'package:clean_code/Screen/MyMeetingScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
+import 'package:clean_code/Screen/Notification1Screen.dart.txt';
 import 'package:clean_code/Screen/notificationScreen.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/event_service.dart';
