@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Network{
-  final String _url = 'https://activity-connect.projectdira.my.id/public/api/auth/login';
+  final String _url = 'https://activity-connect.naradika.my.id/public/api/auth/login';
   var token;
 
   _getToken() async {

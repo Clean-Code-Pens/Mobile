@@ -3,6 +3,7 @@ import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
+import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/meeting_service.dart';
 import 'package:flutter/material.dart';
@@ -327,48 +328,11 @@ class _DetailEventState extends State<DetailEvent>
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Center(
-                      child: Text('Logout Confirm'),
-                    ),
-                    content: Text('Apakah anda yakin akan keluar?'),
-                    // content: Container(
-                    //   child: Column(
-                    //     children: [
-
-                    //     ],
-                    //   ),
-                    // ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          removeAccessToken(); // Close the modal
-                        },
-                        child: Text('Logout'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the modal
-                        },
-                        child: Text('Batal'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+            onPressed: () {},
             icon: Icon(
-              Icons.person,
+              Icons.notifications,
               color: Color(0xFF3188FA),
             ),
-            // icon: CircleAvatar(
-            //   radius: 55.0,
-            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
-            // ),
           )
         ],
         backgroundColor: Colors.white,
@@ -605,40 +569,53 @@ class _DetailEventState extends State<DetailEvent>
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        color: Theme.of(context).colorScheme.primary,
+        child: IconTheme(
+          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  tooltip: 'Home',
+                  icon: const Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'My Events',
+                  icon: const Icon(Icons.event_available),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+                  },
+                ),
+                const SizedBox(width: 24),
+                IconButton(
+                  tooltip: 'My Meetings',
+                  icon: const Icon(Icons.supervised_user_circle_sharp),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Profile',
+                  icon: const Icon(Icons.person_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                  },
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'My Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3188FA),
-        unselectedItemColor: Colors.black,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (_selectedIndex == 0) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ));
-          }
-        },
+        ),
       ),
     );
   }

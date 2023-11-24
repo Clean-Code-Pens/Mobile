@@ -33,8 +33,6 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
   int _selectedIndex = 0;
 
   EventService get service => GetIt.I<EventService>();
-  APIResponse<List<EventModel>>? _apiEvent;
-  APIResponse<List<EventModel>>? _apiEventSearch;
 
   bool _isLoading = false;
 
