@@ -3,6 +3,7 @@ import 'package:clean_code/Services/auth_service.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/meeting_service.dart';
+import 'package:clean_code/Services/profile_service.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
@@ -21,6 +22,7 @@ void setupLocator() {
   GetIt.I.registerLazySingleton(() => CategoryService());
   GetIt.I.registerLazySingleton(() => AuthService());
   GetIt.I.registerLazySingleton(() => MeetingService());
+  GetIt.I.registerLazySingleton(() => ProfileService());
 }
 
 Future<String?> getAccessToken() async {
