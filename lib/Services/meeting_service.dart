@@ -1,10 +1,13 @@
 import 'dart:convert';
+// import 'dart:html';
 
 import 'package:clean_code/Constants/app_url.dart';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Models/user_model.dart';
+import 'package:clean_code/models/profile_model.dart';
+import 'package:clean_code/models/request_model.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
@@ -51,6 +54,11 @@ class MeetingService {
     return prefs.getString('access_token');
   }
 
+  Future<String?> getUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('user_id');
+  }
+
   Future<APIResponse<List<MeetingModel>>> getMeetingList() {
     return http.get(Uri.parse('${API}/meet')).then((data) {
       // return APIResponse<List<MeetingModel>>(
@@ -67,9 +75,9 @@ class MeetingService {
                 id: jsonData["data"][i]['user']['id'],
                 name: jsonData["data"][i]['user']['name']),
             event: EventModel(
-                id: jsonData["data"][i]['user']['id'],
-                name: jsonData["data"][i]['user']['name'],
-                description: jsonData["data"][i]['user']['description']),
+                id: jsonData["data"][i]['event']['id'],
+                name: jsonData["data"][i]['event']['name'],
+                description: jsonData["data"][i]['event']['description']),
             id_event: jsonData["data"][i]['event_id'],
             people_need: jsonData["data"][i]['people_need'],
           );
@@ -99,6 +107,13 @@ class MeetingService {
             user: UserModel(
                 id: jsonData["data"][i]['user']['id'],
                 name: jsonData["data"][i]['user']['name']),
+            event: EventModel(
+                id: jsonData["data"][i]['event']['id'],
+                name: jsonData["data"][i]['event']['name'],
+                place: jsonData["data"][i]['event']['place'],
+                date: DateFormat('EEEE, MMMM d y').format(
+                    DateTime.parse(jsonData["data"][i]['event']['date'])),
+                description: jsonData["data"][i]['event']['description']),
             id_event: jsonData["data"][i]['event_id'],
             people_need: jsonData["data"][i]['people_need'],
           );
@@ -131,8 +146,9 @@ class MeetingService {
       //   return APIResponse<MeetingModel>(
       //   // data: MeetingModel(), errorMessage: jsonDecode(data.body).toString());
       // });
+      final jsonData = jsonDecode(data.body);
       if (data.statusCode == 200) {
-        final jsonData = jsonDecode(data.body);
+        // final jsonData = jsonDecode(data.body);
         final create_meeting_info = MeetingModel(
           id: jsonData['data']['id'],
           name: jsonData['data']['name'],
@@ -143,9 +159,25 @@ class MeetingService {
         );
         return APIResponse<MeetingModel>(
             data: create_meeting_info, errorMessage: '');
+      } else {
+        if (jsonData['message'].length > 1) {
+          return APIResponse<MeetingModel>(
+              data: MeetingModel(),
+              error: true,
+              errorMessage: '${jsonData["message"]}');
+        } else if (jsonData['error'][0] == "22001") {
+          return APIResponse<MeetingModel>(
+              data: MeetingModel(),
+              error: true,
+              errorMessage: '${jsonData['error'][2]}');
+        }
+        return APIResponse<MeetingModel>(
+            data: MeetingModel(),
+            error: true,
+            errorMessage: '${jsonData["message"]}');
       }
-      return APIResponse<MeetingModel>(
-          data: MeetingModel(), error: true, errorMessage: 'An error occured');
+      // return APIResponse<MeetingModel>(
+      //     data: MeetingModel(), error: true, errorMessage: 'An error occured');
     }).catchError((_) => APIResponse<MeetingModel>(
             data: MeetingModel(),
             error: true,
@@ -285,16 +317,179 @@ class MeetingService {
   //       error: true,
   //       errorMessage: 'An error occured'));
   // }
-  Future<APIResponse<MeetingModel>> getDetailMeeting(int idMeeting) {
+  Future<APIResponse<UserModel>> getRequestProfile(int idUser) async {
+    // String? user_id = await getUserId();
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    final post = {
+      'user_id': idUser.toString(),
+    };
+    return http
+        .post(Uri.parse('${API}/profile/orang'), body: post, headers: headers)
+        .then((data) {
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        // final requests = <RequestModel>[];
+        var user = UserModel(
+          id: jsonData["data"]['id'],
+          name: jsonData["data"]['name'],
+          email: jsonData["data"]['email'],
+        );
+        if (jsonData["data"]["profile"] != null) {
+          user.profile = ProfileModel(
+            id: jsonData["data"]["profile"]['id'],
+            address: jsonData["data"]["profile"]['address'],
+            profile_picture: jsonData["data"]["profile"]['profile_picture'],
+            job: jsonData["data"]["profile"]['job'],
+            no_hp: jsonData["data"]["profile"]['noHp'],
+            gender: jsonData["data"]["profile"]['gender'],
+          );
+        }
+
+        return APIResponse<UserModel>(
+            data: user, errorMessage: jsonDecode(data.body).toString());
+      }
+      return APIResponse<UserModel>(
+          data: UserModel(),
+          error: true,
+          errorMessage: data.statusCode.toString());
+    }).catchError((_) => APIResponse<UserModel>(
+            data: UserModel(), error: true, errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<List<RequestModel>>> getRequestMeeting(
+      int idMeeting) async {
+    // String? user_id = await getUserId();
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    final post = {
+      'meet_id': idMeeting.toString(),
+    };
+    return http
+        .post(Uri.parse('${API}/meet-request/list'),
+            body: post, headers: headers)
+        .then((data) {
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        final requests = <RequestModel>[];
+        // var ownership = 'other';
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          // if (user_id == jsonData["data"][i]['user']['id'].toString()) {
+          //   ownership = 'mine';
+          // }
+          final request = RequestModel(
+            id: jsonData["data"][i]['id'],
+            user: UserModel(
+                id: jsonData["data"][i]['user']['id'],
+                name: jsonData["data"][i]['user']['name']),
+          );
+          requests.add(request);
+        }
+
+        return APIResponse<List<RequestModel>>(
+            data: requests, errorMessage: jsonDecode(data.body).toString());
+      }
+      return APIResponse<List<RequestModel>>(
+          data: [], error: true, errorMessage: data.statusCode.toString());
+    }).catchError((_) => APIResponse<List<RequestModel>>(
+            data: [], error: true, errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<RequestModel>> acceptRequest(int idRequest) async {
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    final post = {
+      'id': idRequest.toString(),
+    };
+    return http
+        .post(Uri.parse('${API}/meet-request/accept'),
+            body: post, headers: headers)
+        .then((data) {
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        final request = RequestModel(
+          id: jsonData["data"]['id'],
+          user: UserModel(
+            id: int.parse(jsonData["data"]['user_id']),
+          ),
+        );
+
+        return APIResponse<RequestModel>(
+            data: request, errorMessage: '${jsonData["message"]}');
+      }
+      return APIResponse<RequestModel>(
+          data: RequestModel(),
+          error: true,
+          errorMessage: data.statusCode.toString());
+    }).catchError((_) => APIResponse<RequestModel>(
+            data: RequestModel(),
+            error: true,
+            errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<RequestModel>> rejectRequest(int idRequest) async {
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    final post = {
+      'id': idRequest.toString(),
+    };
+    return http
+        .post(Uri.parse('${API}/meet-request/reject'),
+            body: post, headers: headers)
+        .then((data) {
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        final request = RequestModel(
+          id: jsonData["data"]['id'],
+          user: UserModel(
+            id: int.parse(jsonData["data"]['user_id']),
+          ),
+        );
+
+        return APIResponse<RequestModel>(
+            data: request, errorMessage: '${jsonData["message"]}');
+      }
+      return APIResponse<RequestModel>(
+          data: RequestModel(),
+          error: true,
+          errorMessage: data.statusCode.toString());
+    }).catchError((_) => APIResponse<RequestModel>(
+            data: RequestModel(),
+            error: true,
+            errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<MeetingModel>> getDetailMeeting(int idMeeting) async {
+    String? user_id = await getUserId();
     return http.get(Uri.parse('${API}/meet/${idMeeting}')).then((data) {
       if (data.statusCode == 200) {
         final meets = jsonDecode(data.body)['data'];
         // final listMeet = <MeetingModel>[];
+        var ownership = 'other';
+        if (user_id == meets['user']['id'].toString()) {
+          ownership = 'mine';
+        }
         final meet = MeetingModel(
           id: meets['id'],
+          ownership: ownership,
           name: meets['name'],
           description: meets['description'],
           user: UserModel(id: meets['user']['id'], name: meets['user']['name']),
+          event: EventModel(
+              id: meets['event']['id'],
+              name: meets['event']['name'],
+              place: meets['event']['place'],
+              date: DateFormat('EEEE, MMMM d y')
+                  .format(DateTime.parse(meets['event']['date'])),
+              description: meets['event']['description']),
           id_event: meets['event_id'],
           people_need: meets['people_need'],
         );
@@ -319,8 +514,16 @@ class MeetingService {
         .post(Uri.parse('${API}/meet-request/create'),
             body: post, headers: headers)
         .then((data) {
+      final jsonData = jsonDecode(data.body);
       if (data.statusCode == 200) {
         return APIResponse(data: jsonDecode(data.body), errorMessage: '');
+      } else {
+        if (jsonData['message'] != '') {
+          return APIResponse<MeetingModel>(
+              data: MeetingModel(),
+              error: true,
+              errorMessage: '${jsonData['message']}');
+        }
       }
       return APIResponse(
           data: MeetingModel(), error: true, errorMessage: 'An error occured');
@@ -328,5 +531,197 @@ class MeetingService {
             data: MeetingModel(),
             error: true,
             errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse> reportMeet(String idMeeting) async {
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    final post = {
+      'meet_id': idMeeting,
+    };
+    return http
+        .post(Uri.parse('${API}/meet/report'), body: post, headers: headers)
+        .then((data) {
+      final jsonData = jsonDecode(data.body);
+      if (data.statusCode == 200) {
+        return APIResponse(data: jsonDecode(data.body), errorMessage: '');
+      } else {
+        if (jsonData['message'] != '') {
+          return APIResponse<MeetingModel>(
+              data: MeetingModel(),
+              error: true,
+              errorMessage: '${jsonData['message']}');
+        }
+      }
+      return APIResponse(
+          data: MeetingModel(), error: true, errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse(
+            data: MeetingModel(),
+            error: true,
+            errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<List<MeetingModel>>> searchMeeting(keyword) {
+    final body = {
+      'query': keyword,
+    };
+    return http.post(Uri.parse('${API}/meet/search'), body: body).then((data) {
+      //   return APIResponse<List<MeetingModel>>(
+      //       data: [], errorMessage: jsonDecode(data.body).toString());
+      // });
+      final jsonData = jsonDecode(data.body);
+      if (data.statusCode == 200) {
+        final meetings = <MeetingModel>[];
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          final meeting = MeetingModel(
+            id: jsonData["data"][i]['id'],
+            name: jsonData["data"][i]['name'],
+            description: jsonData["data"][i]['description'],
+            user: UserModel(
+                id: jsonData["data"][i]['user']['id'],
+                name: jsonData["data"][i]['user']['name']),
+            event: EventModel(
+                id: jsonData["data"][i]['event']['id'],
+                name: jsonData["data"][i]['event']['name'],
+                place: jsonData["data"][i]['event']['place'],
+                date: DateFormat('EEEE, MMMM d y').format(
+                    DateTime.parse(jsonData["data"][i]['event']['date'])),
+                description: jsonData["data"][i]['event']['description']),
+            id_event: jsonData["data"][i]['event_id'],
+            people_need: jsonData["data"][i]['people_need'],
+          );
+          meetings.add(meeting);
+        }
+        // return APIResponse<List<EventModel>>(data: events, errorMessage: '');
+        return APIResponse<List<MeetingModel>>(
+            data: meetings, errorMessage: jsonDecode(data.body).toString());
+      } else {
+        if (jsonData['message'] != '') {
+          return APIResponse<List<MeetingModel>>(
+              data: [], error: true, errorMessage: '${jsonData['message']}');
+        }
+      }
+      return APIResponse<List<MeetingModel>>(
+          // data: [], error: true, errorMessage: jsonDecode(data.body).toString());
+          data: [],
+          error: true,
+          errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<List<MeetingModel>>(
+        data: [], error: true, errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<List<MeetingModel>>> getMyMeetingCreated() async {
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    // final body = {
+    //   'query': keyword,
+    // };
+    return http
+        .post(Uri.parse('${API}/meet/my'), headers: headers)
+        .then((data) {
+      //   return APIResponse<List<MeetingModel>>(
+      //       data: [], errorMessage: jsonDecode(data.body).toString());
+      // });
+      final jsonData = jsonDecode(data.body);
+      if (data.statusCode == 200) {
+        final meetings = <MeetingModel>[];
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          final meeting = MeetingModel(
+            id: jsonData["data"][i]['id'],
+            name: jsonData["data"][i]['name'],
+            description: jsonData["data"][i]['description'],
+            user: UserModel(
+                id: jsonData["data"][i]['user']['id'],
+                name: jsonData["data"][i]['user']['name']),
+            event: EventModel(
+                id: jsonData["data"][i]['event']['id'],
+                name: jsonData["data"][i]['event']['name'],
+                place: jsonData["data"][i]['event']['place'],
+                date: DateFormat('EEEE, MMMM d y').format(
+                    DateTime.parse(jsonData["data"][i]['event']['date'])),
+                description: jsonData["data"][i]['event']['description']),
+            id_event: jsonData["data"][i]['event_id'],
+            people_need: jsonData["data"][i]['people_need'],
+            status: jsonData["data"][i]['status'],
+          );
+          meetings.add(meeting);
+        }
+        // return APIResponse<List<EventModel>>(data: events, errorMessage: '');
+        return APIResponse<List<MeetingModel>>(
+            data: meetings, errorMessage: jsonDecode(data.body).toString());
+      } else {
+        if (jsonData['message'] != '') {
+          return APIResponse<List<MeetingModel>>(
+              data: [], error: true, errorMessage: '${jsonData['message']}');
+        }
+      }
+      return APIResponse<List<MeetingModel>>(
+          // data: [], error: true, errorMessage: jsonDecode(data.body).toString());
+          data: [],
+          error: true,
+          errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<List<MeetingModel>>(
+            data: [], error: true, errorMessage: 'An error occured'));
+  }
+
+  Future<APIResponse<List<MeetingModel>>> getMyMeetingJoin() async {
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    // final body = {
+    //   'query': keyword,
+    // };
+    return http
+        .post(Uri.parse('${API}/meet/my-join'), headers: headers)
+        .then((data) {
+      //   return APIResponse<List<MeetingModel>>(
+      //       data: [], errorMessage: jsonDecode(data.body).toString());
+      // });
+      final jsonData = jsonDecode(data.body);
+      if (data.statusCode == 200) {
+        final meetings = <MeetingModel>[];
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          final meeting = MeetingModel(
+            id: jsonData["data"][i]['meet']['id'],
+            name: jsonData["data"][i]['meet']['name'],
+            description: jsonData["data"][i]['meet']['description'],
+            user: UserModel(
+                id: jsonData["data"][i]['meet']['user']['id'],
+                name: jsonData["data"][i]['meet']['user']['name']),
+            event: EventModel(
+                id: jsonData["data"][i]['meet']['event']['id'],
+                name: jsonData["data"][i]['meet']['event']['name'],
+                place: jsonData["data"][i]['meet']['event']['place'],
+                date: DateFormat('EEEE, MMMM d y').format(DateTime.parse(
+                    jsonData["data"][i]['meet']['event']['date'])),
+                description: jsonData["data"][i]['meet']['event']
+                    ['description']),
+            id_event: jsonData["data"][i]['meet']['event_id'],
+            people_need: jsonData["data"][i]['meet']['people_need'],
+            status: jsonData["data"][i]['status'],
+          );
+          meetings.add(meeting);
+        }
+        // return APIResponse<List<EventModel>>(data: events, errorMessage: '');
+        return APIResponse<List<MeetingModel>>(
+            data: meetings, errorMessage: jsonDecode(data.body).toString());
+      } else {
+        if (jsonData['message'] != '') {
+          return APIResponse<List<MeetingModel>>(
+              data: [], error: true, errorMessage: '${jsonData['message']}');
+        }
+      }
+      return APIResponse<List<MeetingModel>>(
+          // data: [], error: true, errorMessage: jsonDecode(data.body).toString());
+          data: [],
+          error: true,
+          errorMessage: 'An error occured');
+    }).catchError((_) => APIResponse<List<MeetingModel>>(
+            data: [], error: true, errorMessage: 'An error occured'));
   }
 }

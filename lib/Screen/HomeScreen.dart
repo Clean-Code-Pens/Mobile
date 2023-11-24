@@ -8,6 +8,9 @@ import 'package:clean_code/Models/meeting_model.dart';
 import 'package:clean_code/Screen/AllEventScreen.dart';
 import 'package:clean_code/Screen/AllMeetingScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
+import 'package:clean_code/Screen/DetailMeetingScreen.dart';
+import 'package:clean_code/Screen/MyEventScreen.dart';
+import 'package:clean_code/Screen/MyMeetingScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Services/auth_service.dart';
@@ -28,7 +31,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   int _selectedIndex = 0;
-  int limitList = 2;
+  int limitList = 5;
 
   // nyeluk service e di dadekno variabel
   AuthService get serviceLogin => GetIt.I<AuthService>();
@@ -62,6 +65,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       _isLoading = false;
     });
   }
+
   int itemCountCarousel(length) {
     if (length >= limitList) {
       return length + 1;
@@ -77,7 +81,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     // print(_apiCategory?.data.length);
     for (var i = 0; i < categoryLength; i++) {
       final tab = Tab(
-        text: _apiCategory?.data[i]?.name ?? 'Not Found',
+        text: _apiCategory?.data?[i].name ?? 'Not Found',
       );
       tabs.add(tab);
     }
@@ -98,7 +102,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       // ;
       // print("==============");
       // print(apiEventList);
-      final tab = eventCategoryList(_apiCategory?.data[i]?.id ?? 0);
+      final tab = eventCategoryList(_apiCategory?.data?[i].id ?? 0);
       childs.add(tab);
       // final tab = eventCategoryList(apiEventList);
     }
@@ -386,9 +390,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DetailEvent(
-                        idEvent: int.parse(
-                            _apiMeetingList?.data[index]?.id_event ?? '0'),
+                      builder: (context) => DetailMeeting(
+                        idMeeting: _apiMeetingList?.data?[index].id ?? 0,
                       ),
                     ));
               },
@@ -454,8 +457,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                             width: MediaQuery.of(context).size.width,
                             decoration: BoxDecoration(
                                 image: DecorationImage(
-                                  image:
-                                      AssetImage("assets/hero.png"),
+                                  image: AssetImage("assets/hero.png"),
                                   fit: BoxFit.cover,
                                 ),
                                 // borderRadius: BorderRadius.only(
@@ -557,7 +559,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
-        onPressed: (){
+        onPressed: () {
           Navigator.push(
               context, MaterialPageRoute(builder: (context) => CreateEvent()));
         },
@@ -577,16 +579,16 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   tooltip: 'Home',
                   icon: const Icon(Icons.home),
                   onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
                   },
                 ),
                 IconButton(
                   tooltip: 'My Events',
                   icon: const Icon(Icons.event_available),
                   onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyEvent()));
                   },
                 ),
                 const SizedBox(width: 24),
@@ -594,8 +596,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   tooltip: 'My Meetings',
                   icon: const Icon(Icons.supervised_user_circle_sharp),
                   onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyMeeting()));
                   },
                 ),
                 IconButton(
@@ -603,7 +605,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   icon: const Icon(Icons.person_rounded),
                   onPressed: () {
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
                   },
                 ),
               ],

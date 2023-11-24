@@ -1,9 +1,11 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/DetailMeetingScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/meeting_service.dart';
@@ -33,6 +35,9 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
 
   int _selectedIndex = 0;
 
+  List<MeetingModel> meetings = [];
+  List<MeetingModel> filteredMeetings = [];
+
   MeetingService get service => GetIt.I<MeetingService>();
   APIResponse<List<MeetingModel>>? _apiMeeting;
   // APIResponse<List<EventModel>>? _apiEventSearch;
@@ -50,10 +55,35 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
     setState(() {
       _isLoading = true;
     });
-    _apiMeeting = await service.getMeetingList();
+
+    final APIResponse<List<MeetingModel>> _apiMeeting =
+        await service.getMeetingList();
+
+    List<MeetingModel> data = _apiMeeting.data;
+    List<MeetingModel> itemList = data.map((item) => item).toList();
+
+    setState(() {
+      meetings = itemList;
+      filteredMeetings = itemList;
+    });
+    // _apiMeeting = await service.getMeetingList();
     // print(_apiEvent?.errorMessage);
     setState(() {
       _isLoading = false;
+    });
+  }
+
+  void filterMeetings(String query) async {
+    final APIResponse<List<MeetingModel>> _apiEventSearch =
+        await service.searchMeeting(query);
+
+    List<MeetingModel> data = _apiEventSearch.data;
+
+    print('cek filter');
+    print(_apiEventSearch.errorMessage);
+
+    setState(() {
+      filteredMeetings = data;
     });
   }
 
@@ -71,9 +101,10 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
   List<Widget> listMeeting() {
     List<Widget> events = [];
     // int categoryLength = _apiDetailEvent != null ? _apiDetailEvent.data.length : 0;
-    int eventLength = _apiMeeting?.data?.length ?? 0;
+    int meetingLength = filteredMeetings.length;
+    // int meetingLength = _apiMeeting?.data?.length ?? 0;
     // print(_apiDetailEvent?.data.length);
-    for (var i = 0; i < eventLength; i++) {
+    for (var i = 0; i < meetingLength; i++) {
       // Container(
       //   margin: EdgeInsets.symmetric(horizontal: 5.0)
       // )
@@ -96,7 +127,7 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
                           borderRadius: BorderRadius.circular(10),
                           color: Colors.white,
                           image: DecorationImage(
-                            image: AssetImage('assets/masjid-nabawi-1.jpg'),
+                            image: AssetImage('assets/carousel.png'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -110,7 +141,8 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              _apiMeeting?.data[i]?.name ?? 'Not Found',
+                              filteredMeetings[i].name ?? 'Not Found',
+                              // _apiMeeting?.data[i]?.name ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontWeight: FontWeight.w700),
@@ -122,7 +154,8 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              _apiMeeting?.data[i]?.description ?? 'Not Found',
+                              filteredMeetings[i].description ?? 'Not Found',
+                              // _apiMeeting?.data[i]?.description ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -143,7 +176,7 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
                                       size: 15,
                                     ),
                                     Text(
-                                      _apiMeeting?.data?[i].user?.name ??
+                                      filteredMeetings[i].user?.name ??
                                           'Not Found',
                                       style: TextStyle(fontSize: 12),
                                     )
@@ -165,7 +198,8 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
                                     Row(
                                       children: [
                                         Text(
-                                          _apiMeeting?.data[i]?.people_need ??
+                                          filteredMeetings[i].people_need ??
+                                              // _apiMeeting?.data[i]?.people_need ??
                                               '0' + ' people',
                                           maxLines: 1,
                                           overflow: TextOverflow.ellipsis,
@@ -208,7 +242,7 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
               context,
               MaterialPageRoute(
                 builder: (context) => DetailMeeting(
-                  idMeeting: _apiMeeting?.data[i]?.id ?? 0,
+                  idMeeting: filteredMeetings[i].id ?? 0,
                 ),
               ));
         },
@@ -254,10 +288,8 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
                 height: 50,
                 child: TextField(
                   controller: keywordSearch,
-                  onChanged: (value) => {
-                    setState(() {
-                      _apiMeeting = _searchEventList(value);
-                    })
+                  onChanged: (value) {
+                    filterMeetings(value);
                   },
                   keyboardType: TextInputType.emailAddress,
                   style: TextStyle(
@@ -286,62 +318,85 @@ class _AllMeetingState extends State<AllMeeting> with TickerProviderStateMixin {
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'My Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3188FA),
-        unselectedItemColor: Colors.black,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (_selectedIndex == 0) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ));
-          }
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreateEvent()));
         },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        color: Theme.of(context).colorScheme.primary,
+        child: IconTheme(
+          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  tooltip: 'Home',
+                  icon: const Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'My Events',
+                  icon: const Icon(Icons.event_available),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+                  },
+                ),
+                const SizedBox(width: 24),
+                IconButton(
+                  tooltip: 'My Meetings',
+                  icon: const Icon(Icons.supervised_user_circle_sharp),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Profile',
+                  icon: const Icon(Icons.person_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  void updateButtonState(String text) {
-    // if text field has a value and button is inactive
-    setState(() {
-      _apiMeeting = _searchEventList(text);
-    });
-  }
+  // void updateButtonState(String text) {
+  //   // if text field has a value and button is inactive
+  //   setState(() {
+  //     _apiMeeting = _searchEventList(text);
+  //   });
+  // }
 
-  _searchEventList(text) async {
-    // if (text != null && text.length > 0) {
-    //   print(text);
-    //   _apiMeeting = await service.searchEvent(text);
-    //   return _apiMeeting?.errorMessage;
-    // } else if ((text == null || text.length == 0)) {
-    //   print(text);
-    //   _apiMeeting = await service.getEventList();
-    //   return _apiMeeting;
-    // }
-  }
+  // _searchEventList(text) async {
+  //   // if (text != null && text.length > 0) {
+  //   //   print(text);
+  //   //   _apiMeeting = await service.searchEvent(text);
+  //   //   return _apiMeeting?.errorMessage;
+  //   // } else if ((text == null || text.length == 0)) {
+  //   //   print(text);
+  //   //   _apiMeeting = await service.getEventList();
+  //   //   return _apiMeeting;
+  //   // }
+  // }
 }
 
 class EventMeeting {}

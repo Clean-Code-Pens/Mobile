@@ -50,7 +50,6 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
       _isLoading = true;
     });
     _apiEvent = await service.getMyEventList();
-    print(_apiEvent?.errorMessage);
     setState(() {
       _isLoading = false;
     });
@@ -96,7 +95,7 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
                           color: Colors.white,
                           image: DecorationImage(
                             image: NetworkImage(
-                                _apiEvent?.data[i]?.imgUrl ?? 'Not Found'),
+                                _apiEvent?.data?[i].imgUrl ?? 'Not Found'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -110,7 +109,7 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              _apiEvent?.data[i]?.name ?? 'Not Found',
+                              _apiEvent?.data?[i].name ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontWeight: FontWeight.w700),
@@ -122,7 +121,7 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              _apiEvent?.data[i]?.description ?? 'Not Found',
+                              _apiEvent?.data?[i].description ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -137,7 +136,7 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
                             child: Row(
                               children: [
                                 Text(
-                                  _apiEvent?.data[i]?.date ?? 'Not Found',
+                                  _apiEvent?.data?[i].date ?? 'Not Found',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -158,7 +157,7 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      _apiEvent?.data[i]?.place ?? 'Not Found',
+                                      _apiEvent?.data?[i].place ?? 'Not Found',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -190,7 +189,7 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
               context,
               MaterialPageRoute(
                 builder: (context) => DetailEvent(
-                  idEvent: _apiEvent?.data[i]?.id ?? 0,
+                  idEvent: _apiEvent?.data?[i].id ?? 0,
                 ),
               ));
         },
@@ -220,45 +219,6 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
         builder: (_) {
           return Column(
             children: [
-              Container(
-                margin: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 6,
-                      offset: Offset(0, 2),
-                    ),
-                  ],
-                ),
-                height: 50,
-                child: TextField(
-                  controller: keywordSearch,
-                  onChanged: (value) => {
-                    setState(() {
-                      _apiEvent = _searchEventList(value);
-                    })
-                  },
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(
-                    color: Colors.black,
-                  ),
-                  decoration: InputDecoration(
-                    border: InputBorder.none,
-                    contentPadding: EdgeInsets.only(top: 16),
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: Colors.grey,
-                    ),
-                    hintText: "Find your event",
-                    hintStyle: TextStyle(
-                      color: Colors.grey,
-                    ),
-                  ),
-                ),
-              ),
               Expanded(
                 child: ListView(
                   children: listEvent(),
@@ -304,24 +264,5 @@ class _MyEventState extends State<MyEvent> with TickerProviderStateMixin {
         },
       ),
     );
-  }
-
-  void updateButtonState(String text) {
-    // if text field has a value and button is inactive
-    setState(() {
-      _apiEvent = _searchEventList(text);
-    });
-  }
-
-  _searchEventList(text) async {
-    if (text != null && text.length > 0) {
-      print(text);
-      _apiEvent = await service.searchEvent(text);
-      return _apiEvent?.errorMessage;
-    } else if ((text == null || text.length == 0)) {
-      print(text);
-      _apiEvent = await service.getEventList();
-      return _apiEvent;
-    }
   }
 }

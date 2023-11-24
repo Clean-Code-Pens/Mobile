@@ -9,6 +9,8 @@ class MeetingModel {
   EventModel? event;
   String? id_event;
   String? people_need;
+  String? status;
+  String? ownership;
 
   MeetingModel({
     this.id,
@@ -18,6 +20,8 @@ class MeetingModel {
     this.event,
     this.id_event,
     this.people_need,
+    this.status,
+    this.ownership,
   });
 }
 

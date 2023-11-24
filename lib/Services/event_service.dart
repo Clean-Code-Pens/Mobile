@@ -13,10 +13,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 class EventService {
   static String baseurl = AppUrl.baseurl;
   static String API = AppUrl.apiurl;
-  static const headers = {
-    'Authorization':
-        'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjdGl2aXR5LWNvbm5lY3QucHJvamVjdGRpcmEubXkuaWQvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NDI3MzUwLCJleHAiOjE2OTg0MzA5NTAsIm5iZiI6MTY5ODQyNzM1MCwianRpIjoiOUN2THZTb28xZk9BeDFJTSIsInN1YiI6IjUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.1W5jYKoi4C7Gnk-zOeEMMQEO_vhBiSkZpx9aPKlOYis',
-  };
+  // static const headers = {
+  //   'Authorization':
+  //       'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FjdGl2aXR5LWNvbm5lY3QucHJvamVjdGRpcmEubXkuaWQvcHVibGljL2FwaS9hdXRoL2xvZ2luIiwiaWF0IjoxNjk4NDI3MzUwLCJleHAiOjE2OTg0MzA5NTAsIm5iZiI6MTY5ODQyNzM1MCwianRpIjoiOUN2THZTb28xZk9BeDFJTSIsInN1YiI6IjUiLCJwcnYiOiIyM2JkNWM4OTQ5ZjYwMGFkYjM5ZTcwMWM0MDA4NzJkYjdhNTk3NmY3In0.1W5jYKoi4C7Gnk-zOeEMMQEO_vhBiSkZpx9aPKlOYis',
+  // };
   // Future<String> access_token = getAccessToken();
 
   Future<String?> getAccessToken() async {
@@ -150,7 +150,8 @@ class EventService {
         final response = await request.send();
         var responseBody = await response.stream.toBytes();
         // return APIResponse<EventModel>(
-        //     data: EventModel(), errorMessage: '${access_token}');
+        //     data: EventModel(),
+        //     errorMessage: String.fromCharCodes(responseBody));
         final jsonData = jsonDecode(String.fromCharCodes(responseBody));
         if (response.statusCode == 200) {
           // print('Image uploaded successfully');
@@ -306,6 +307,13 @@ class EventService {
   }
 
   Future<APIResponse<List<EventModel>>> searchEvent(keyword) async {
+    // final body = {
+    //   'query': keyword,
+    // };
+    // return http.post(Uri.parse('${API}/event/search'), body: body).then((data) {
+    //   return APIResponse<List<EventModel>>(
+    //       data: [], errorMessage: jsonDecode(data.body).toString());
+    // });
     // String? access_token = await getAccessToken();
     // final headers = {
     //   'Authorization': 'Bearer ${access_token}',
@@ -313,7 +321,7 @@ class EventService {
     final body = {
       'query': keyword,
     };
-    return http.post(Uri.parse('${API}/meet/create'), body: body).then((data) {
+    return http.post(Uri.parse('${API}/event/search'), body: body).then((data) {
       //   return APIResponse<EventModel>(
       //   // data: EventModel(), errorMessage: jsonDecode(data.body).toString());
       // });
@@ -374,8 +382,7 @@ class EventService {
           events.add(event);
         }
         // return APIResponse<List<EventModel>>(data: events, errorMessage: '');
-        return APIResponse<List<EventModel>>(
-            data: events, errorMessage: jsonDecode(data.body).toString());
+        return APIResponse<List<EventModel>>(data: events, errorMessage: '');
       }
       return APIResponse<List<EventModel>>(
           data: [], error: true, errorMessage: 'An error occured');

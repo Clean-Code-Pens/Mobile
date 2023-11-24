@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toast/toast.dart';
 
 class CreateMeeting extends StatefulWidget {
   int idEvent;
@@ -28,6 +29,10 @@ class _CreateMeetingState extends State<CreateMeeting>
   TextEditingController titleController = TextEditingController();
   TextEditingController peopleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
+
+  void initState() {
+    super.initState();
+  }
 
   Future<void> removeAccessToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -331,8 +336,8 @@ class _CreateMeetingState extends State<CreateMeeting>
                   tooltip: 'Home',
                   icon: const Icon(Icons.home),
                   onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
                   },
                 ),
                 IconButton(
@@ -357,7 +362,9 @@ class _CreateMeetingState extends State<CreateMeeting>
                   icon: const Icon(Icons.person_rounded),
                   onPressed: () {
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
                   },
                 ),
               ],

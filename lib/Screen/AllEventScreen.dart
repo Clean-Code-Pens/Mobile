@@ -1,8 +1,10 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/meeting_service.dart';
@@ -32,6 +34,9 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
 
   int _selectedIndex = 0;
 
+  List<EventModel> events = [];
+  List<EventModel> filteredEvents = [];
+
   EventService get service => GetIt.I<EventService>();
 
   bool _isLoading = false;
@@ -47,10 +52,40 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
     setState(() {
       _isLoading = true;
     });
-    _apiEvent = await service.getEventList();
-    print(_apiEvent?.errorMessage);
+
+    final APIResponse<List<EventModel>> _apiEvent =
+        await service.getEventList();
+
+    List<EventModel> data = _apiEvent.data;
+    List<EventModel> itemList = data.map((item) => item).toList();
+
+    setState(() {
+      events = itemList;
+      filteredEvents = itemList;
+    });
+    // if (_apiEvent.error == false) {
+    //   // Assuming the API returns a JSON array of items
+    // } else {
+    //   throw Exception('Failed to load data');
+    // }
+    // _apiEvent = await service.getEventList();
+    // print(_apiEvent?.errorMessage);
     setState(() {
       _isLoading = false;
+    });
+  }
+
+  void filterEvents(String query) async {
+    final APIResponse<List<EventModel>> _apiEventSearch =
+        await service.searchEvent(query);
+
+    List<EventModel> data = _apiEventSearch.data;
+
+    print('cek filter');
+    print(_apiEventSearch.errorMessage);
+
+    setState(() {
+      filteredEvents = data;
     });
   }
 
@@ -68,7 +103,8 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
   List<Widget> listEvent() {
     List<Widget> events = [];
     // int categoryLength = _apiDetailEvent != null ? _apiDetailEvent.data.length : 0;
-    int eventLength = _apiEvent?.data?.length ?? 0;
+    // int eventLength = _apiEvent?.data?.length ?? 0;
+    int eventLength = filteredEvents.length;
     // print(_apiDetailEvent?.data.length);
     for (var i = 0; i < eventLength; i++) {
       // Container(
@@ -94,7 +130,8 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
                           color: Colors.white,
                           image: DecorationImage(
                             image: NetworkImage(
-                                _apiEvent?.data[i]?.imgUrl ?? 'Not Found'),
+                                filteredEvents[i].imgUrl ?? 'Not Found'),
+                            // _apiEvent?.data[i]?.imgUrl ?? 'Not Found'),
                             fit: BoxFit.cover,
                           ),
                         ),
@@ -108,7 +145,8 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              _apiEvent?.data[i]?.name ?? 'Not Found',
+                              filteredEvents[i].name ?? 'Not Found',
+                              // _apiEvent?.data[i]?.name ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(fontWeight: FontWeight.w700),
@@ -120,7 +158,8 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
                           Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              _apiEvent?.data[i]?.description ?? 'Not Found',
+                              filteredEvents[i].description ?? 'Not Found',
+                              // _apiEvent?.data[i]?.description ?? 'Not Found',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -135,7 +174,8 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
                             child: Row(
                               children: [
                                 Text(
-                                  _apiEvent?.data[i]?.date ?? 'Not Found',
+                                  filteredEvents[i].date ?? 'Not Found',
+                                  // _apiEvent?.data[i]?.date ?? 'Not Found',
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
                                   style: TextStyle(
@@ -156,7 +196,8 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      _apiEvent?.data[i]?.place ?? 'Not Found',
+                                      filteredEvents[i].place ?? 'Not Found',
+                                      // _apiEvent?.data[i]?.place ?? 'Not Found',
                                       maxLines: 1,
                                       overflow: TextOverflow.ellipsis,
                                       style: TextStyle(
@@ -188,7 +229,7 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
               context,
               MaterialPageRoute(
                 builder: (context) => DetailEvent(
-                  idEvent: _apiEvent?.data[i]?.id ?? 0,
+                  idEvent: filteredEvents[i].id ?? 0,
                 ),
               ));
         },
@@ -234,10 +275,8 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
                 height: 50,
                 child: TextField(
                   controller: keywordSearch,
-                  onChanged: (value) => {
-                    setState(() {
-                      _apiEvent = _searchEventList(value);
-                    })
+                  onChanged: (value) {
+                    filterEvents(value);
                   },
                   keyboardType: TextInputType.emailAddress,
                   style: TextStyle(
@@ -266,60 +305,83 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'My Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3188FA),
-        unselectedItemColor: Colors.black,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (_selectedIndex == 0) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ));
-          }
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreateEvent()));
         },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        color: Theme.of(context).colorScheme.primary,
+        child: IconTheme(
+          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  tooltip: 'Home',
+                  icon: const Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'My Events',
+                  icon: const Icon(Icons.event_available),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+                  },
+                ),
+                const SizedBox(width: 24),
+                IconButton(
+                  tooltip: 'My Meetings',
+                  icon: const Icon(Icons.supervised_user_circle_sharp),
+                  onPressed: () {
+                    // Navigator.push(
+                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Profile',
+                  icon: const Icon(Icons.person_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
 
-  void updateButtonState(String text) {
-    // if text field has a value and button is inactive
-    setState(() {
-      _apiEvent = _searchEventList(text);
-    });
-  }
+  // void updateButtonState(String text) {
+  //   // if text field has a value and button is inactive
+  //   setState(() {
+  //     _apiEvent = _searchEventList(text);
+  //   });
+  // }
 
-  _searchEventList(text) async {
-    if (text != null && text.length > 0) {
-      print(text);
-      _apiEvent = await service.searchEvent(text);
-      return _apiEvent?.errorMessage;
-    } else if ((text == null || text.length == 0)) {
-      print(text);
-      _apiEvent = await service.getEventList();
-      return _apiEvent;
-    }
-  }
+  // _searchEventList(text) async {
+  //   if (text != null && text.length > 0) {
+  //     print(text);
+  //     _apiEvent = await service.searchEvent(text);
+  //     return _apiEvent?.errorMessage;
+  //   } else if ((text == null || text.length == 0)) {
+  //     print(text);
+  //     _apiEvent = await service.getEventList();
+  //     return _apiEvent;
+  //   }
+  // }
 }

@@ -538,7 +538,7 @@ class _CreateEventState extends State<CreateEvent> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => DetailEvent(
-                                    idEvent: _apiEventCreate?.data.id ?? 0),
+                                    idEvent: _apiEventCreate?.data?.id ?? 0),
                               ));
                         }
                       }
@@ -599,8 +599,8 @@ class _CreateEventState extends State<CreateEvent> {
                   tooltip: 'Home',
                   icon: const Icon(Icons.home),
                   onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
                   },
                 ),
                 IconButton(
@@ -625,7 +625,9 @@ class _CreateEventState extends State<CreateEvent> {
                   icon: const Icon(Icons.person_rounded),
                   onPressed: () {
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
                   },
                 ),
               ],

@@ -1,6 +1,7 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Screen/DetailMeetingScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
@@ -155,154 +156,14 @@ class _DetailEventState extends State<DetailEvent>
                 ),
               ),
             ),
-            onTap: () async {
-              _apiDetailMeeting =
-                  await meetingService.getDetailMeeting(id_meeting);
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Center(
-                      child: Text(_apiDetailEvent?.data?.meetings?[i].name ??
-                          'Not Found'),
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailMeeting(
+                      idMeeting: _apiDetailEvent?.data?.meetings?[i].id ?? 0,
                     ),
-                    // content: Text('Ajukan pertemuan'),
-                    content: Container(
-                      height: 200,
-                      child: Column(
-                        children: [
-                          Container(
-                            child: Row(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 8),
-                                    child: Icon(Icons.person),
-                                    // child: Icon(Icons.person),
-                                  ),
-                                ),
-                                Text(_apiDetailEvent
-                                        ?.data?.meetings?[i].user?.name ??
-                                    'Not Found')
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Container(
-                            child: Row(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Padding(
-                                    padding: EdgeInsets.only(right: 8),
-                                    child: Icon(
-                                      Icons.people,
-                                      size: 15,
-                                    ),
-                                    // child: Icon(Icons.person),
-                                  ),
-                                ),
-                                Text(
-                                    '${_apiDetailEvent?.data?.meetings?[i].people_need ?? '0'} orang')
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 8,
-                          ),
-                          Expanded(
-                            child: Align(
-                              alignment: Alignment.topLeft,
-                              child: Text(
-                                _apiDetailEvent
-                                        ?.data?.meetings?[i].description ??
-                                    '',
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 10,
-                          ),
-                          InkWell(
-                            child: Container(
-                              margin: EdgeInsets.symmetric(horizontal: 2.0),
-                              width: double.maxFinite,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                color: Color(0xFF3188FA),
-                              ),
-                              child: Align(
-                                alignment: Alignment.center,
-                                child: Padding(
-                                  padding: EdgeInsets.only(top: 10, bottom: 10),
-                                  child: Text(
-                                    'Join',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            onTap: () async {
-                              _apiJoinMeeting = await meetingService
-                                  .joinMeet(id_meeting.toString());
-                              if (_apiJoinMeeting != null) {
-                                if (_apiJoinMeeting?.error == true) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Error'),
-                                      content: Text(
-                                          _apiJoinMeeting?.errorMessage ??
-                                              'Error'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(),
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => AlertDialog(
-                                      title: Text('Success'),
-                                      content:
-                                          Text('Berhasil request join meeting'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(),
-                                          child: Text('OK'),
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
-                    actions: <Widget>[
-                      Center()
-                      // TextButton(
-                      //   onPressed: () {
-                      //     Navigator.of(context).pop(); // Close the modal
-                      //   },
-                      //   child: Text('Iya'),
-                      // ),
-                    ],
-                  );
-                },
-              );
+                  ));
             },
           ),
           SizedBox(
@@ -583,8 +444,8 @@ class _DetailEventState extends State<DetailEvent>
                   tooltip: 'Home',
                   icon: const Icon(Icons.home),
                   onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
                   },
                 ),
                 IconButton(
@@ -609,7 +470,9 @@ class _DetailEventState extends State<DetailEvent>
                   icon: const Icon(Icons.person_rounded),
                   onPressed: () {
                     Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
                   },
                 ),
               ],
