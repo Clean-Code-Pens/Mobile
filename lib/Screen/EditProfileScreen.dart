@@ -456,11 +456,10 @@ class _EditProfileState extends State<EditProfile>
                       },
                       items: gender(),
                       decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(10),
-                        hintText: "Select Gender",
-                        hintStyle: TextStyle(color: Color(0xff7A7A7A)),
-                        border: InputBorder.none,
-                      ),
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(10),
+                          hintText: "Enter Gender",
+                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
                     ),
                   ),
                   SizedBox(

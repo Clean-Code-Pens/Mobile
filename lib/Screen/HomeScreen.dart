@@ -23,6 +23,7 @@ import 'package:flutter/services.dart';
 import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:clean_code/Screen/notificationScreen.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -420,7 +421,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           // SizedBox(width: 5), // Spasi antara gambar dan tombol logout
 
           IconButton(
-            onPressed: () {},
+            onPressed: () {
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (context) => NotificationScreen()));
+            },
             icon: Icon(
               Icons.notifications,
               color: Color(0xFF3188FA),
