@@ -305,64 +305,64 @@ class _AllEventState extends State<AllEvent> with TickerProviderStateMixin {
           );
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add),
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => CreateEvent()));
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        color: Theme.of(context).colorScheme.primary,
-        child: IconTheme(
-          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  tooltip: 'Home',
-                  icon: const Icon(Icons.home),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                  },
-                ),
-                IconButton(
-                  tooltip: 'My Events',
-                  icon: const Icon(Icons.event_available),
-                  onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
-                  },
-                ),
-                const SizedBox(width: 24),
-                IconButton(
-                  tooltip: 'My Meetings',
-                  icon: const Icon(Icons.supervised_user_circle_sharp),
-                  onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
-                  },
-                ),
-                IconButton(
-                  tooltip: 'Profile',
-                  icon: const Icon(Icons.person_rounded),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProfileScreen()));
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   child: Icon(Icons.add),
+      //   onPressed: () {
+      //     Navigator.push(
+      //         context, MaterialPageRoute(builder: (context) => CreateEvent()));
+      //   },
+      // ),
+      // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // bottomNavigationBar: BottomAppBar(
+      //   shape: const CircularNotchedRectangle(),
+      //   color: Theme.of(context).colorScheme.primary,
+      //   child: IconTheme(
+      //     data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+      //     child: Padding(
+      //       padding: const EdgeInsets.all(12.0),
+      //       child: Row(
+      //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //         children: <Widget>[
+      //           IconButton(
+      //             tooltip: 'Home',
+      //             icon: const Icon(Icons.home),
+      //             onPressed: () {
+      //               Navigator.push(context,
+      //                   MaterialPageRoute(builder: (context) => HomeScreen()));
+      //             },
+      //           ),
+      //           IconButton(
+      //             tooltip: 'My Events',
+      //             icon: const Icon(Icons.event_available),
+      //             onPressed: () {
+      //               // Navigator.push(
+      //               //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+      //             },
+      //           ),
+      //           const SizedBox(width: 24),
+      //           IconButton(
+      //             tooltip: 'My Meetings',
+      //             icon: const Icon(Icons.supervised_user_circle_sharp),
+      //             onPressed: () {
+      //               // Navigator.push(
+      //               //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+      //             },
+      //           ),
+      //           IconButton(
+      //             tooltip: 'Profile',
+      //             icon: const Icon(Icons.person_rounded),
+      //             onPressed: () {
+      //               Navigator.push(
+      //                   context,
+      //                   MaterialPageRoute(
+      //                       builder: (context) => ProfileScreen()));
+      //             },
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 

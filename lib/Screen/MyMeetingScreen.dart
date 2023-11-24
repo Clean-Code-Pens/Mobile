@@ -1,10 +1,14 @@
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/meeting_model.dart';
+import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:clean_code/Screen/DetailEventScreen.dart';
 import 'package:clean_code/Screen/DetailMeetingScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
+import 'package:clean_code/Screen/MyEventScreen.dart';
+import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
+import 'package:clean_code/Screen/notificationScreen.dart';
 import 'package:clean_code/Services/event_service.dart';
 import 'package:clean_code/Services/meeting_service.dart';
 import 'package:flutter/material.dart';
@@ -549,63 +553,46 @@ class _MyMeetingState extends State<MyMeeting> with TickerProviderStateMixin {
     TabController _tabController = TabController(length: 2, vsync: this);
     return Scaffold(
       appBar: AppBar(
-        // leading: IconButton(
-        //   icon: Icon(Icons.arrow_back, color: Color(0xFF3188FA)),
-        //   onPressed: () => Navigator.of(context).pop(),
-        // ),
         centerTitle: true,
         title: Text(
           'My Meeting',
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
         actions: <Widget>[
+          // IconButton(
+          //   onPressed: () => removeAccessToken(),
+          //   icon: Icon(Icons.exit_to_app),
+          //   color: Color(0xFF3188FA),
+          // ),
+          // SizedBox(width: 5), // Spasi antara gambar dan tombol logout
+
           IconButton(
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Center(
-                      child: Text('Logout Confirm'),
-                    ),
-                    content: Text('Apakah anda yakin akan keluar?'),
-                    // content: Container(
-                    //   child: Column(
-                    //     children: [
-
-                    //     ],
-                    //   ),
-                    // ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          removeAccessToken(); // Close the modal
-                        },
-                        child: Text('Logout'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the modal
-                        },
-                        child: Text('Batal'),
-                      ),
-                    ],
-                  );
-                },
-              );
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NotificationScreen()));
             },
             icon: Icon(
-              Icons.person,
+              Icons.notifications,
               color: Color(0xFF3188FA),
             ),
-            // icon: CircleAvatar(
-            //   radius: 55.0,
-            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
-            // ),
           )
         ],
         backgroundColor: Colors.white,
       ),
+      // appBar: AppBar(
+      //   leading: IconButton(
+      //     icon: Icon(Icons.arrow_back, color: Color(0xFF3188FA)),
+      //     onPressed: () => Navigator.of(context).pop(),
+      //   ),
+      //   centerTitle: true,
+      //   title: Text(
+      //     'My Meeting',
+      //     style: TextStyle(color: Color(0xFF3188FA)),
+      //   ),
+      //   backgroundColor: Colors.white,
+      // ),
       body: Builder(
         builder: (_) {
           return Column(
@@ -652,40 +639,63 @@ class _MyMeetingState extends State<MyMeeting> with TickerProviderStateMixin {
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'My Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3188FA),
-        unselectedItemColor: Colors.black,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (_selectedIndex == 0) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ));
-          }
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.add),
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => CreateEvent()));
         },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomAppBar(
+        shape: const CircularNotchedRectangle(),
+        color: Theme.of(context).colorScheme.primary,
+        child: IconTheme(
+          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+          child: Padding(
+            padding: const EdgeInsets.all(12.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: <Widget>[
+                IconButton(
+                  tooltip: 'Home',
+                  icon: const Icon(Icons.home),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'My Events',
+                  icon: const Icon(Icons.event_available),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyEvent()));
+                  },
+                ),
+                const SizedBox(width: 24),
+                IconButton(
+                  tooltip: 'My Meetings',
+                  icon: const Icon(Icons.supervised_user_circle_sharp),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => MyMeeting()));
+                  },
+                ),
+                IconButton(
+                  tooltip: 'Profile',
+                  icon: const Icon(Icons.person_rounded),
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ProfileScreen()));
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

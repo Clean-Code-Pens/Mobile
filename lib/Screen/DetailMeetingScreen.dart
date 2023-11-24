@@ -602,58 +602,70 @@ class _DetailMeetingState extends State<DetailMeeting>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text(
+      //     'ActivityConnect',
+      //     style: TextStyle(color: Color(0xFF3188FA)),
+      //   ),
+      //   actions: <Widget>[
+      //     IconButton(
+      //       onPressed: () {
+      //         showDialog(
+      //           context: context,
+      //           builder: (BuildContext context) {
+      //             return AlertDialog(
+      //               title: Center(
+      //                 child: Text('Logout Confirm'),
+      //               ),
+      //               content: Text('Apakah anda yakin akan keluar?'),
+      //               // content: Container(
+      //               //   child: Column(
+      //               //     children: [
+
+      //               //     ],
+      //               //   ),
+      //               // ),
+      //               actions: <Widget>[
+      //                 TextButton(
+      //                   onPressed: () {
+      //                     removeAccessToken(); // Close the modal
+      //                   },
+      //                   child: Text('Logout'),
+      //                 ),
+      //                 TextButton(
+      //                   onPressed: () {
+      //                     Navigator.of(context).pop(); // Close the modal
+      //                   },
+      //                   child: Text('Batal'),
+      //                 ),
+      //               ],
+      //             );
+      //           },
+      //         );
+      //       },
+      //       icon: Icon(
+      //         Icons.person,
+      //         color: Color(0xFF3188FA),
+      //       ),
+      //       // icon: CircleAvatar(
+      //       //   radius: 55.0,
+      //       //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+      //       // ),
+      //     )
+      //   ],
+      //   backgroundColor: Colors.white,
+      // ),
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color(0xFF3188FA)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         centerTitle: true,
         title: Text(
-          'ActivityConnect',
+          'Detail Meeting',
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Center(
-                      child: Text('Logout Confirm'),
-                    ),
-                    content: Text('Apakah anda yakin akan keluar?'),
-                    // content: Container(
-                    //   child: Column(
-                    //     children: [
-
-                    //     ],
-                    //   ),
-                    // ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          removeAccessToken(); // Close the modal
-                        },
-                        child: Text('Logout'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the modal
-                        },
-                        child: Text('Batal'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            icon: Icon(
-              Icons.person,
-              color: Color(0xFF3188FA),
-            ),
-            // icon: CircleAvatar(
-            //   radius: 55.0,
-            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
-            // ),
-          )
-        ],
         backgroundColor: Colors.white,
       ),
       body: Builder(
@@ -1091,41 +1103,41 @@ class _DetailMeetingState extends State<DetailMeeting>
           );
         },
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_month),
-            label: 'My Events',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.notifications),
-            label: 'Notification',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Color(0xFF3188FA),
-        unselectedItemColor: Colors.black,
-        onTap: (index) {
-          setState(() {
-            _selectedIndex = index;
-          });
-          if (_selectedIndex == 0) {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ));
-          }
-        },
-      ),
+      // bottomNavigationBar: BottomNavigationBar(
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.home),
+      //       label: 'Home',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.calendar_month),
+      //       label: 'My Events',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.search),
+      //       label: 'Search',
+      //     ),
+      //     BottomNavigationBarItem(
+      //       icon: Icon(Icons.notifications),
+      //       label: 'Notification',
+      //     ),
+      //   ],
+      //   currentIndex: _selectedIndex,
+      //   selectedItemColor: Color(0xFF3188FA),
+      //   unselectedItemColor: Colors.black,
+      //   onTap: (index) {
+      //     setState(() {
+      //       _selectedIndex = index;
+      //     });
+      //     if (_selectedIndex == 0) {
+      //       Navigator.push(
+      //           context,
+      //           MaterialPageRoute(
+      //             builder: (context) => HomeScreen(),
+      //           ));
+      //     }
+      //   },
+      // ),
     );
   }
 }

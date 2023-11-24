@@ -135,21 +135,33 @@ class _CreateEventState extends State<CreateEvent> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text(
+      //     'ActivityConnect',
+      //     style: TextStyle(color: Color(0xFF3188FA)),
+      //   ),
+      //   actions: <Widget>[
+      //     IconButton(
+      //       onPressed: () {},
+      //       icon: Icon(
+      //         Icons.notifications,
+      //         color: Color(0xFF3188FA),
+      //       ),
+      //     )
+      //   ],
+      //   backgroundColor: Colors.white,
+      // ),
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color(0xFF3188FA)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         centerTitle: true,
         title: Text(
           'ActivityConnect',
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: Icon(
-              Icons.notifications,
-              color: Color(0xFF3188FA),
-            ),
-          )
-        ],
         backgroundColor: Colors.white,
       ),
       body: Builder(builder: (_) {
@@ -585,56 +597,56 @@ class _CreateEventState extends State<CreateEvent> {
           ),
         );
       }),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        color: Theme.of(context).colorScheme.primary,
-        child: IconTheme(
-          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  tooltip: 'Home',
-                  icon: const Icon(Icons.home),
-                  onPressed: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
-                  },
-                ),
-                IconButton(
-                  tooltip: 'My Events',
-                  icon: const Icon(Icons.event_available),
-                  onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
-                  },
-                ),
-                const SizedBox(width: 24),
-                IconButton(
-                  tooltip: 'My Meetings',
-                  icon: const Icon(Icons.supervised_user_circle_sharp),
-                  onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
-                  },
-                ),
-                IconButton(
-                  tooltip: 'Profile',
-                  icon: const Icon(Icons.person_rounded),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ProfileScreen()));
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      // bottomNavigationBar: BottomAppBar(
+      //   shape: const CircularNotchedRectangle(),
+      //   color: Theme.of(context).colorScheme.primary,
+      //   child: IconTheme(
+      //     data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+      //     child: Padding(
+      //       padding: const EdgeInsets.all(12.0),
+      //       child: Row(
+      //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //         children: <Widget>[
+      //           IconButton(
+      //             tooltip: 'Home',
+      //             icon: const Icon(Icons.home),
+      //             onPressed: () {
+      //               Navigator.push(context,
+      //                   MaterialPageRoute(builder: (context) => HomeScreen()));
+      //             },
+      //           ),
+      //           IconButton(
+      //             tooltip: 'My Events',
+      //             icon: const Icon(Icons.event_available),
+      //             onPressed: () {
+      //               // Navigator.push(
+      //               //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+      //             },
+      //           ),
+      //           const SizedBox(width: 24),
+      //           IconButton(
+      //             tooltip: 'My Meetings',
+      //             icon: const Icon(Icons.supervised_user_circle_sharp),
+      //             onPressed: () {
+      //               // Navigator.push(
+      //               //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+      //             },
+      //           ),
+      //           IconButton(
+      //             tooltip: 'Profile',
+      //             icon: const Icon(Icons.person_rounded),
+      //             onPressed: () {
+      //               Navigator.push(
+      //                   context,
+      //                   MaterialPageRoute(
+      //                       builder: (context) => ProfileScreen()));
+      //             },
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

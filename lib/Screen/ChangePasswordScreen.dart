@@ -17,8 +17,8 @@ class ChangePassword extends StatefulWidget {
 class _ChangePasswordState extends State<ChangePassword>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
-TextEditingController newPasswordController = TextEditingController();
- TextEditingController confirmPasswordController = TextEditingController();
+  TextEditingController newPasswordController = TextEditingController();
+  TextEditingController confirmPasswordController = TextEditingController();
   bool _isChangePassword = false;
   bool _ChangePasswordSuccess = false;
 
@@ -34,7 +34,8 @@ TextEditingController newPasswordController = TextEditingController();
       _ChangePasswordSuccess = false;
     });
 
-    var url = "https://activity-connect.naradika.my.id/public/api/profile/update-password";
+    var url =
+        "https://activity-connect.naradika.my.id/public/api/profile/update-password";
     var data = {
       "password": newPasswordController.text,
       "password_confirmation": confirmPasswordController.text
@@ -43,14 +44,10 @@ TextEditingController newPasswordController = TextEditingController();
     var urlParse = Uri.parse(url);
 
     try {
-      Response response = await http.post(
-          urlParse,
-          body: bodyy,
-          headers: {
-            "Content-Type": "application/json",
-            'Authorization': 'Bearer ${access_token}',
-          }
-      );
+      Response response = await http.post(urlParse, body: bodyy, headers: {
+        "Content-Type": "application/json",
+        'Authorization': 'Bearer ${access_token}',
+      });
 
       if (response.statusCode == 200) {
         // Registrasi berhasil
@@ -68,7 +65,8 @@ TextEditingController newPasswordController = TextEditingController();
                 TextButton(
                   child: Text("OK"),
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginScreen()));
                   },
                 ),
               ],
@@ -102,17 +100,29 @@ TextEditingController newPasswordController = TextEditingController();
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text(
+      //     'Change Password',
+      //     style: TextStyle(color: Color(0xFF3188FA)),
+      //   ),
+      //   actions: <Widget>[],
+      //   backgroundColor: Colors.white,
+      // ),
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color(0xFF3188FA)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         centerTitle: true,
         title: Text(
           'Change Password',
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
-        actions: <Widget>[
-        ],
         backgroundColor: Colors.white,
       ),
       body: SingleChildScrollView(
@@ -210,7 +220,6 @@ TextEditingController newPasswordController = TextEditingController();
                   )
                 ],
               ),
-
               InkWell(
                 child: Container(
                   margin: EdgeInsets.symmetric(horizontal: 2.0),
@@ -234,59 +243,58 @@ TextEditingController newPasswordController = TextEditingController();
                   ChangePassword();
                 },
               ),
-
             ],
           ),
         ),
       ),
-      bottomNavigationBar: BottomAppBar(
-        shape: const CircularNotchedRectangle(),
-        color: Theme.of(context).colorScheme.primary,
-        child: IconTheme(
-          data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
-          child: Padding(
-            padding: const EdgeInsets.all(12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                IconButton(
-                  tooltip: 'Home',
-                  icon: const Icon(Icons.home),
-                  onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => HomeScreen()));
-                  },
-                ),
-                IconButton(
-                  tooltip: 'My Events',
-                  icon: const Icon(Icons.event_available),
-                  onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) => EventScreen()));
-                  },
-                ),
-                const SizedBox(width: 24),
-                IconButton(
-                  tooltip: 'My Meetings',
-                  icon: const Icon(Icons.supervised_user_circle_sharp),
-                  onPressed: () {
-                    // Navigator.push(
-                    //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
-                  },
-                ),
-                IconButton(
-                  tooltip: 'Profile',
-                  icon: const Icon(Icons.person_rounded),
-                  onPressed: () {
-                    Navigator.push(
-                        context, MaterialPageRoute(builder: (context) => ProfileScreen()));
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
+      // bottomNavigationBar: BottomAppBar(
+      //   shape: const CircularNotchedRectangle(),
+      //   color: Theme.of(context).colorScheme.primary,
+      //   child: IconTheme(
+      //     data: IconThemeData(color: Theme.of(context).colorScheme.onPrimary),
+      //     child: Padding(
+      //       padding: const EdgeInsets.all(12.0),
+      //       child: Row(
+      //         mainAxisAlignment: MainAxisAlignment.spaceAround,
+      //         children: <Widget>[
+      //           IconButton(
+      //             tooltip: 'Home',
+      //             icon: const Icon(Icons.home),
+      //             onPressed: () {
+      //               Navigator.push(
+      //                   context, MaterialPageRoute(builder: (context) => HomeScreen()));
+      //             },
+      //           ),
+      //           IconButton(
+      //             tooltip: 'My Events',
+      //             icon: const Icon(Icons.event_available),
+      //             onPressed: () {
+      //               // Navigator.push(
+      //               //     context, MaterialPageRoute(builder: (context) => EventScreen()));
+      //             },
+      //           ),
+      //           const SizedBox(width: 24),
+      //           IconButton(
+      //             tooltip: 'My Meetings',
+      //             icon: const Icon(Icons.supervised_user_circle_sharp),
+      //             onPressed: () {
+      //               // Navigator.push(
+      //               //     context, MaterialPageRoute(builder: (context) =>MeetingScreen()));
+      //             },
+      //           ),
+      //           IconButton(
+      //             tooltip: 'Profile',
+      //             icon: const Icon(Icons.person_rounded),
+      //             onPressed: () {
+      //               Navigator.push(
+      //                   context, MaterialPageRoute(builder: (context) => ProfileScreen()));
+      //             },
+      //           ),
+      //         ],
+      //       ),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }

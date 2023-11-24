@@ -86,59 +86,71 @@ class _RequestProfileState extends State<RequestProfile>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: Color(0xFF3188FA)),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
         centerTitle: true,
         title: Text(
-          'ActivityConnect',
+          'Profile',
           style: TextStyle(color: Color(0xFF3188FA)),
         ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Center(
-                      child: Text('Logout Confirm'),
-                    ),
-                    content: Text('Apakah anda yakin akan keluar?'),
-                    // content: Container(
-                    //   child: Column(
-                    //     children: [
-
-                    //     ],
-                    //   ),
-                    // ),
-                    actions: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          removeAccessToken(); // Close the modal
-                        },
-                        child: Text('Logout'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop(); // Close the modal
-                        },
-                        child: Text('Batal'),
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
-            icon: Icon(
-              Icons.person,
-              color: Color(0xFF3188FA),
-            ),
-            // icon: CircleAvatar(
-            //   radius: 55.0,
-            //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
-            // ),
-          )
-        ],
         backgroundColor: Colors.white,
       ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text(
+      //     'ActivityConnect',
+      //     style: TextStyle(color: Color(0xFF3188FA)),
+      //   ),
+      //   actions: <Widget>[
+      //     IconButton(
+      //       onPressed: () {
+      //         showDialog(
+      //           context: context,
+      //           builder: (BuildContext context) {
+      //             return AlertDialog(
+      //               title: Center(
+      //                 child: Text('Logout Confirm'),
+      //               ),
+      //               content: Text('Apakah anda yakin akan keluar?'),
+      //               // content: Container(
+      //               //   child: Column(
+      //               //     children: [
+
+      //               //     ],
+      //               //   ),
+      //               // ),
+      //               actions: <Widget>[
+      //                 TextButton(
+      //                   onPressed: () {
+      //                     removeAccessToken(); // Close the modal
+      //                   },
+      //                   child: Text('Logout'),
+      //                 ),
+      //                 TextButton(
+      //                   onPressed: () {
+      //                     Navigator.of(context).pop(); // Close the modal
+      //                   },
+      //                   child: Text('Batal'),
+      //                 ),
+      //               ],
+      //             );
+      //           },
+      //         );
+      //       },
+      //       icon: Icon(
+      //         Icons.person,
+      //         color: Color(0xFF3188FA),
+      //       ),
+      //       // icon: CircleAvatar(
+      //       //   radius: 55.0,
+      //       //   backgroundImage: ExactAssetImage('assets/masjid-nabawi-1.jpg'),
+      //       // ),
+      //     )
+      //   ],
+      //   backgroundColor: Colors.white,
+      // ),
       body: Builder(
         builder: (_) {
           return SingleChildScrollView(
