@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:clean_code/Constants/app_url.dart';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/user_model.dart';
+import 'package:clean_code/models/notif_model.dart';
 // import 'package:clean_code/Models/profile_model.dart';
 import 'package:clean_code/models/profile_model.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +24,41 @@ class ProfileService {
   Future<String?> getUserId() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('user_id');
+  }
+
+  Future<APIResponse<List<NotifModel>>> getNotif() async {
+    // String? user_id = await getUserId();
+    String? access_token = await getAccessToken();
+    final headers = {
+      'Authorization': 'Bearer ${access_token}',
+    };
+    // final post = {
+    //   'user_id': user_id,
+    // };
+    return http
+        .post(Uri.parse('${API}/notification'), headers: headers)
+        .then((data) {
+      if (data.statusCode == 200) {
+        final jsonData = jsonDecode(data.body);
+        final notifs = <NotifModel>[];
+        for (var i = 0; i < jsonData["data"].length; i++) {
+          var notif = NotifModel(
+            id: jsonData["data"][i]['id'],
+            description: jsonData["data"][i]['description'],
+            date: DateFormat('EEEE, MMMM d y')
+                .format(DateTime.parse(jsonData["data"][i]['created_at'])),
+          );
+          notifs.add(notif);
+        }
+        // final requests = <RequestModel>[];
+
+        return APIResponse<List<NotifModel>>(
+            data: notifs, errorMessage: jsonDecode(data.body).toString());
+      }
+      return APIResponse<List<NotifModel>>(
+          data: [], error: true, errorMessage: data.statusCode.toString());
+    }).catchError((_) => APIResponse<List<NotifModel>>(
+            data: [], error: true, errorMessage: 'An error occured'));
   }
 
   Future<APIResponse<UserModel>> getDetailProfile() async {

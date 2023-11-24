@@ -13,6 +13,7 @@ import 'package:clean_code/Screen/MyEventScreen.dart';
 import 'package:clean_code/Screen/MyMeetingScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
+import 'package:clean_code/Screen/notificationScreen.dart';
 import 'package:clean_code/Services/auth_service.dart';
 import 'package:clean_code/Services/category_service.dart';
 import 'package:clean_code/Services/event_service.dart';
@@ -23,7 +24,7 @@ import 'package:flutter/services.dart';
 import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:clean_code/Screen/notificationScreen.dart';
+import 'package:clean_code/Screen/Notification1Screen.dart.txt';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -71,7 +72,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     if (length >= limitList) {
       return length + 1;
     }
-    return length;
+    return length + 1;
   }
 
   @override
@@ -139,7 +140,8 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                   itemCount: itemCountCarousel(eventCategoryLength),
                   scrollDirection: Axis.horizontal,
                   itemBuilder: (_, index) {
-                    if (index == limitList) {
+                    // if (index == limitList) {
+                    if (index == eventCategoryLength) {
                       return InkWell(
                         child: Container(
                           margin: EdgeInsets.symmetric(horizontal: 2.0),
@@ -423,7 +425,9 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
           IconButton(
             onPressed: () {
               Navigator.push(
-                  context, MaterialPageRoute(builder: (context) => NotificationScreen()));
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => NotificationScreen()));
             },
             icon: Icon(
               Icons.notifications,
