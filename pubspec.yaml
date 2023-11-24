@@ -40,6 +40,7 @@ dependencies:
   shared_preferences:
   http:
   get_it:
+  toast:
 
 dev_dependencies:
   flutter_test:

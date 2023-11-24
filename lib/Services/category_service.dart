@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:clean_code/Constants/app_url.dart';
 import 'package:clean_code/Models/api_response.dart';
 import 'package:clean_code/Models/event_models.dart';
 import 'package:clean_code/Models/category_model.dart';
@@ -7,8 +8,8 @@ import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
 
 class CategoryService {
-  static const baseurl = 'https://activity-connect.naradika.my.id/public';
-  static const API = 'https://activity-connect.naradika.my.id/public/api';
+  static String baseurl = AppUrl.baseurl;
+  static String API = AppUrl.apiurl;
   static const headers = {};
 
   Future<APIResponse<List<CategoryModel>>> getCategoryList() {

@@ -233,12 +233,13 @@ class _LoginScreenState extends State<LoginScreen> {
               final prefs = await SharedPreferences.getInstance();
               prefs.setString('access_token',
                   _apiLogin?.data?.access_token ?? 'access_token');
+              prefs.setString(
+                  'user_id', _apiLogin?.data?.user?.id.toString() ?? '0');
               Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) => HomeScreen(),
-                  )
-              );
+                  ));
             }
           }
           // ...
