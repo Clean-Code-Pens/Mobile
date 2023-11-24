@@ -84,7 +84,7 @@ class ProfileService {
         if (jsonData["data"]["profile"] != null) {
           user.profile = ProfileModel(
             id: jsonData["data"]["profile"]['id'],
-            address: jsonData["data"]["profile"]['address'],
+            address: jsonData["data"]["profile"]['addres'],
             profile_picture: jsonData["data"]["profile"]['profile_picture'],
             job: jsonData["data"]["profile"]['job'],
             no_hp: jsonData["data"]["profile"]['noHp'],
@@ -151,7 +151,7 @@ class ProfileService {
             email: jsonData["data"]['user']['email'],
             profile: ProfileModel(
               id: jsonData["data"]['id'],
-              address: jsonData["data"]['address'],
+              address: jsonData["data"]['addres'],
               profile_picture: jsonData["data"]['profile_picture'],
               job: jsonData["data"]['job'],
               no_hp: jsonData["data"]['noHp'],
@@ -216,7 +216,7 @@ class ProfileService {
           email: jsonData["data"]['user']['email'],
           profile: ProfileModel(
             id: jsonData["data"]['profile']['id'],
-            address: jsonData["data"]['profile']['address'],
+            address: jsonData["data"]['profile']['addres'],
             profile_picture: jsonData["data"]['profile']['profile_picture'],
             job: jsonData["data"]['profile']['job'],
             no_hp: jsonData["data"]['profile']['noHp'],

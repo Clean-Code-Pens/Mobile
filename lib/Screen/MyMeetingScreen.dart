@@ -192,6 +192,14 @@ class _MyMeetingState extends State<MyMeeting> with TickerProviderStateMixin {
     }
     print('cek eror my meeting');
     print(data?.error);
+    if (meetingLength <= 0) {
+      events.add(Container(
+        margin: EdgeInsets.all(15),
+        child: Center(
+          child: Text('Belum ada meeting'),
+        ),
+      ));
+    }
     for (var i = 0; i < meetingLength; i++) {
       // Container(
       //   margin: EdgeInsets.symmetric(horizontal: 5.0)
