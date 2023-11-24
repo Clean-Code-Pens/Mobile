@@ -1,10 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:clean_code/Screen/HomeScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:http/http.dart%20';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfile extends StatefulWidget {
   @override
@@ -15,6 +18,12 @@ class _EditProfileState extends State<EditProfile>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
   XFile? _selectedImage;
+  TextEditingController nameController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
+  TextEditingController genderController = TextEditingController();
+  TextEditingController jobController = TextEditingController();
+  TextEditingController noHpController = TextEditingController();
+
 
   Future<void> _pickImage() async {
     final ImagePicker _picker = ImagePicker();
@@ -158,7 +167,8 @@ class _EditProfileState extends State<EditProfile>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.datetime,
+                      controller: nameController,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -232,7 +242,8 @@ class _EditProfileState extends State<EditProfile>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.emailAddress,
+                      controller: noHpController,
+                      keyboardType: TextInputType.number,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -270,7 +281,8 @@ class _EditProfileState extends State<EditProfile>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.emailAddress,
+                      controller: addressController,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -308,7 +320,8 @@ class _EditProfileState extends State<EditProfile>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.emailAddress,
+                      controller: genderController,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,
@@ -346,7 +359,8 @@ class _EditProfileState extends State<EditProfile>
                       ],
                     ),
                     child: TextField(
-                      keyboardType: TextInputType.emailAddress,
+                      controller: jobController,
+                      keyboardType: TextInputType.text,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
                           border: InputBorder.none,

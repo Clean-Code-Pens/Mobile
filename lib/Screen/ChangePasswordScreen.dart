@@ -1,7 +1,13 @@
 import 'package:clean_code/Screen/HomeScreen.dart';
 import 'package:clean_code/Screen/ProfileScreen.dart';
+import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:http/http.dart%20';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChangePassword extends StatefulWidget {
   @override
@@ -11,7 +17,91 @@ class ChangePassword extends StatefulWidget {
 class _ChangePasswordState extends State<ChangePassword>
     with TickerProviderStateMixin {
   int _selectedIndex = 0;
+TextEditingController newPasswordController = TextEditingController();
+ TextEditingController confirmPasswordController = TextEditingController();
+  bool _isChangePassword = false;
+  bool _ChangePasswordSuccess = false;
 
+  Future<String?> getAccessToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('access_token');
+  }
+
+  void ChangePassword() async {
+    String? access_token = await getAccessToken();
+    setState(() {
+      _isChangePassword = true;
+      _ChangePasswordSuccess = false;
+    });
+
+    var url = "https://activity-connect.naradika.my.id/public/api/profile/update-password";
+    var data = {
+      "password": newPasswordController.text,
+      "password_confirmation": confirmPasswordController.text
+    };
+    var bodyy = json.encode(data);
+    var urlParse = Uri.parse(url);
+
+    try {
+      Response response = await http.post(
+          urlParse,
+          body: bodyy,
+          headers: {
+            "Content-Type": "application/json",
+            'Authorization': 'Bearer ${access_token}',
+          }
+      );
+
+      if (response.statusCode == 200) {
+        // Registrasi berhasil
+        var dataa = jsonDecode(response.body);
+        setState(() {
+          _ChangePasswordSuccess = true;
+        });
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Success"),
+              content: Text("Change Password successful"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      } else if (response.statusCode == 400) {
+        // Error: Registrasi gagal
+        var dataa = jsonDecode(response.body);
+        showDialog(
+          context: context,
+          builder: (context) {
+            return AlertDialog(
+              title: Text("Error"),
+              content: Text("${dataa['message']}"),
+              actions: <Widget>[
+                TextButton(
+                  child: Text("OK"),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
+            );
+          },
+        );
+      }
+    } finally {
+      setState(() {
+        _isChangePassword = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,43 +138,6 @@ class _ChangePasswordState extends State<ChangePassword>
                 children: [
                   Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('Old Password'),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          spreadRadius: 2,
-                          blurRadius: 3,
-                          offset: Offset(0, 3), // changes position of shadow
-                        ),
-                      ],
-                    ),
-                    child: TextField(
-                      keyboardType: TextInputType.datetime,
-                      style: TextStyle(color: Colors.black),
-                      decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(10),
-                          hintText: "Enter Old Password",
-                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  )
-                ],
-              ),
-              Column(
-                children: [
-                  Align(
-                    alignment: Alignment.centerLeft,
                     child: Text('New Password'),
                   ),
                   SizedBox(
@@ -104,6 +157,7 @@ class _ChangePasswordState extends State<ChangePassword>
                       ],
                     ),
                     child: TextField(
+                      controller: newPasswordController,
                       keyboardType: TextInputType.emailAddress,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
@@ -141,6 +195,7 @@ class _ChangePasswordState extends State<ChangePassword>
                       ],
                     ),
                     child: TextField(
+                      controller: confirmPasswordController,
                       keyboardType: TextInputType.emailAddress,
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
@@ -175,7 +230,9 @@ class _ChangePasswordState extends State<ChangePassword>
                     ),
                   ),
                 ),
-                onTap: () => print("seemore"),
+                onTap: () {
+                  ChangePassword();
+                },
               ),
 
             ],

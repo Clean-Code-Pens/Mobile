@@ -1,8 +1,11 @@
+import 'package:clean_code/Models/api_response.dart';
+import 'package:clean_code/Models/profile_model.dart';
 import 'package:clean_code/Screen/CreateEventScreen.dart';
 import 'package:clean_code/Screen/HomeScreen.dart';
 import 'package:clean_code/Screen/loginScreen.dart';
 import 'package:clean_code/Screen/EditProfileScreen.dart';
 import 'package:clean_code/Screen/ChangePasswordScreen.dart';
+import 'package:clean_code/Services/profile_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -17,6 +20,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   int _selectedIndex = 0;
+  ProfileService _profileService = ProfileService();
 
   Future<void> removeAccessToken(BuildContext context) async {
     final prefs = await SharedPreferences.getInstance();
@@ -47,21 +51,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ],
         backgroundColor: Colors.white,
       ),
-      body: SingleChildScrollView(
-        child: Center(
-          child: Container(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircleAvatar(
-                  radius: 60,
-                  backgroundImage: AssetImage("assets/carousel.png"),
+        body: FutureBuilder(
+        future: _profileService.getDetailProfile(),
+        builder: (context, AsyncSnapshot<APIResponse<ProfileModel>> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else {
+            final profileData = snapshot.data!.data;
+
+            return SingleChildScrollView(
+              child: Center(
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 60,
+                      backgroundImage: AssetImage("assets/carousel.png"),
+                    ),
+                    SizedBox(height: 10),
+                    Text(
+                      profileData.name ?? ("") ,
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text(
+                      profileData.email ?? ("") ,
+                      style: TextStyle(fontSize: 15),
                 ),
-                SizedBox(height: 10),
-                Text('Named', style: TextStyle(fontSize: 20)),
-                Text('Named', style: TextStyle(fontSize: 15)),
                 SizedBox(height: 20),
                 SizedBox(
                   width: 300,
@@ -132,12 +152,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     child: Text("Logout", style: TextStyle(color: Colors.black)),
                   ),
+                   ),
+                  ]
+                  ),
                 ),
-              ],
-            ),
-          ),
+                 ),
+               );
+            }
+          },
         ),
-      ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: (){
