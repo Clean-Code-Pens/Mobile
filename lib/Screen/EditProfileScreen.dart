@@ -23,6 +23,7 @@ class _EditProfileState extends State<EditProfile>
   TextEditingController genderController = TextEditingController();
   TextEditingController jobController = TextEditingController();
   TextEditingController noHpController = TextEditingController();
+  String selectedGender = "Male";
 
 
   Future<void> _pickImage() async {
@@ -319,15 +320,26 @@ class _EditProfileState extends State<EditProfile>
                         ),
                       ],
                     ),
-                    child: TextField(
-                      controller: genderController,
-                      keyboardType: TextInputType.text,
+                    child: DropdownButtonFormField<String>(
+                      value: selectedGender,
+                      items: ["Male", "Female"].map((String value) {
+                        return DropdownMenuItem<String>(
+                          value: value,
+                          child: Text(value),
+                        );
+                      }).toList(),
+                      onChanged: (String? value) {
+                        setState(() {
+                          selectedGender = value ?? "Male"; // Default to Male if null
+                        });
+                      },
                       style: TextStyle(color: Colors.black),
                       decoration: InputDecoration(
-                          border: InputBorder.none,
-                          contentPadding: EdgeInsets.all(10),
-                          hintText: "Enter Gender",
-                          hintStyle: TextStyle(color: Color(0xff7A7A7A))),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.all(10),
+                        hintText: "Select Gender",
+                        hintStyle: TextStyle(color: Color(0xff7A7A7A)),
+                      ),
                     ),
                   ),
                   SizedBox(
